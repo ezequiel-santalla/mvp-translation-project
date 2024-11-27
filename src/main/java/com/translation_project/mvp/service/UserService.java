@@ -10,8 +10,12 @@ import java.util.List;
 @Service
 public class UserService implements IUserService {
 
+    private final IUserRepository userRepository;
+
     @Autowired
-    private IUserRepository userRepository;
+    public UserService(IUserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public List<User> findUsers() {
