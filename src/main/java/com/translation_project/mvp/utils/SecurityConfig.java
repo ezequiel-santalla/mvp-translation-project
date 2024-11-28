@@ -16,7 +16,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/", "/swagger-ui/", "/swagger-ui.html", "/v3/api-docs*/", "/h2-console/").permitAll()
-                        .requestMatchers("/users").permitAll()
+                        .requestMatchers("/users/**").permitAll()
+                        .requestMatchers("/projects/**").permitAll()
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
