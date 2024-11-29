@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class UserService implements IUserService {
+public class UserService {
 
     private final IUserRepository userRepository;
 
@@ -17,17 +17,14 @@ public class UserService implements IUserService {
         this.userRepository = userRepository;
     }
 
-    @Override
     public List<User> findUsers() {
         return userRepository.findAll();
     }
 
-    @Override
     public User addUser(User u) {
         return userRepository.save(u);
     }
 
-    @Override
     public User modifyUser(User u) {
         User userModified = findUserById(u.getId());
 
@@ -40,12 +37,10 @@ public class UserService implements IUserService {
         return userRepository.save(userModified);
     }
 
-    @Override
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 
-    @Override
     public User findUserById(Long id) {
         return userRepository.findById(id).orElse(null);
     }

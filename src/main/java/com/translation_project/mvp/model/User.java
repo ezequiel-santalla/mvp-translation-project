@@ -1,5 +1,6 @@
 package com.translation_project.mvp.model;
 
+import com.translation_project.mvp.types.RoleType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,6 +29,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role;
+    private RoleType role;
 }

@@ -1,8 +1,9 @@
 package com.translation_project.mvp.controller;
 
 import com.translation_project.mvp.model.User;
-import com.translation_project.mvp.service.IUserService;
+import com.translation_project.mvp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,9 +13,9 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private final IUserService userService;
+    private final UserService userService;
 
-    public UserController(IUserService userService) {
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
@@ -24,6 +25,7 @@ public class UserController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public User postUser(@RequestBody User u) {
         return userService.addUser(u);
     }
@@ -36,6 +38,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
     }
