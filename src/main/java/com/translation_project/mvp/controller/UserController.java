@@ -1,7 +1,7 @@
 package com.translation_project.mvp.controller;
 
 import com.translation_project.mvp.model.User;
-import com.translation_project.mvp.service.UserService;
+import com.translation_project.mvp.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +13,9 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private final UserService userService;
+    private final IUserService userService;
 
-    public UserController(UserService userService) {
+    public UserController(IUserService userService) {
         this.userService = userService;
     }
 
