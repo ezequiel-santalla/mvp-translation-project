@@ -6,16 +6,20 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "language_pairs", indexes = {
-        @Index(name = "idx_source_language", columnList = "id_source_language"),
-        @Index(name = "idx_target_language", columnList = "id_target_language")
-})
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 @Getter @Setter
+@Entity
+@Table(name = "language_pairs",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"id_source_language", "id_target_language"})
+        },
+        indexes = {
+                @Index(name = "idx_source_language", columnList = "id_source_language"),
+                @Index(name = "idx_target_language", columnList = "id_target_language")
+        })
 public class LanguagePair {
 
     @Id
@@ -32,7 +36,4 @@ public class LanguagePair {
 
     @ManyToMany(mappedBy = "languagePairs", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<User> users = new ArrayList<>();
-
-    @OneToMany(mappedBy = "languagePair", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Project> projects = new ArrayList<>();
 }
