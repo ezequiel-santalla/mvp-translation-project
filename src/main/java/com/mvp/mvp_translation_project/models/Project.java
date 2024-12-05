@@ -30,7 +30,7 @@ public class Project {
     private String description;
 
     @Column(nullable = false, columnDefinition = "DATETIME")
-    private LocalDateTime creationDate;
+    private LocalDateTime startingDate;
 
     @Column(nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime deadline;

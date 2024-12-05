@@ -34,7 +34,7 @@ public class ProjectService {
         if (existingProject != null) {
             existingProject.setName(p.getName());
             existingProject.setDescription(p.getDescription());
-            existingProject.setCreationDate(p.getCreationDate());
+            existingProject.setStartingDate(p.getStartingDate());
             existingProject.setDeadline(p.getDeadline());
             existingProject.setFinishedDate(p.getFinishedDate());
             existingProject.setStatus(p.getStatus());
