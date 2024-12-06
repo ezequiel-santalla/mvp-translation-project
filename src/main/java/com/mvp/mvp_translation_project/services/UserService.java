@@ -2,7 +2,11 @@ package com.mvp.mvp_translation_project.services;
 
 import com.mvp.mvp_translation_project.exceptions.UserNotFoundException;
 import com.mvp.mvp_translation_project.models.User;
+import com.mvp.mvp_translation_project.models.UserDTO;
+import com.mvp.mvp_translation_project.models.UserRegistrationDTO;
+import com.mvp.mvp_translation_project.models.UserResponseDTO;
 import com.mvp.mvp_translation_project.repositories.UserRepository;
+import com.mvp.mvp_translation_project.types.RoleType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -50,6 +54,42 @@ public class UserService {
 
     public Boolean emailExists(String email) {
         return userRepository.findUserByEmail(email).isPresent();
+    }
+    public UserResponseDTO registerUser(UserRegistrationDTO registrationDTO) {
+        // Mapeo del DTO a la entidad
+        User user = new User();
+        user.setName(registrationDTO.getName());
+        user.setLastName(registrationDTO.getLastName());
+        user.setEmail(registrationDTO.getEmail());
+        user.setBirthDate(registrationDTO.getBirthDate());
+        user.setIdentityNumber(registrationDTO.getIdentityNumber());
+        user.setCellphone(registrationDTO.getCellphone());
+        user.setRole(RoleType.TRANSLATOR);
+        user.setPassword(passwordEncoder.encode(registrationDTO.getPassword()));
+        user.setActive(true); // Activar usuario por defecto
+
+        // Guardar en la base de datos
+        User savedUser = userRepository.save(user);
+
+        // Retornar como DTO
+        return mapToResponseDTO(savedUser);
+    }
+
+    private UserDTO mapToDTO(User user) {
+        UserDTO dto = new UserDTO();
+        dto.setName(user.getName());
+        dto.setLastName(user.getLastName());
+        dto.setEmail(user.getEmail());
+        return dto;
+    }
+
+    private UserResponseDTO mapToResponseDTO(User user) {
+        UserResponseDTO responseDto = new UserResponseDTO();
+        responseDto.setName(user.getName());
+        responseDto.setLastName(user.getLastName());
+        responseDto.setEmail(user.getEmail());
+        responseDto.setRole(user.getRole());
+        return responseDto;
     }
 
 }

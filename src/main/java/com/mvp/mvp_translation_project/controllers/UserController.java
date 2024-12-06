@@ -1,8 +1,13 @@
 package com.mvp.mvp_translation_project.controllers;
 
 import com.mvp.mvp_translation_project.models.User;
+import com.mvp.mvp_translation_project.models.UserDTO;
+import com.mvp.mvp_translation_project.models.UserRegistrationDTO;
+import com.mvp.mvp_translation_project.models.UserResponseDTO;
 import com.mvp.mvp_translation_project.services.EmailService;
 import com.mvp.mvp_translation_project.services.UserService;
+import jakarta.validation.Valid;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/users")
@@ -36,23 +42,29 @@ public class UserController {
         return ResponseEntity.ok(userService.getUser(id));
     }
 
+
     @PostMapping("/register")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<UserResponseDTO> registerUser (@RequestBody @Valid UserRegistrationDTO userRegistrationDTO) {
         // Verificar si el correo electrónico ya existe
-        if (userService.emailExists(user.getEmail())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        if (userService.emailExists(userRegistrationDTO.getEmail())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
-
-            // Guardar el usuario
-            User createdUser = userService.createUser(user);
-
+        try {
+            // Registrar al usuario
+            UserResponseDTO registeredUser  = userService.registerUser (userRegistrationDTO);
             // Enviar el código al correo electrónico
-            emailService.sendSimpleMail(user.getEmail(), "Welcome to Verbalia", "User created successfully");
+            emailService.sendSimpleMail(registeredUser.getEmail(), "Welcome to Verbalia, "+registeredUser.getName(), "User created successfully");
 
-            // Retornar el usuario creado con el código de estado CREATED
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+            return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
 
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            // Registrar el error (puedes usar un logger aquí)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
     }
+
 
     // 5. Eliminar un usuario por ID (DELETE)
     @DeleteMapping("/{id}")
