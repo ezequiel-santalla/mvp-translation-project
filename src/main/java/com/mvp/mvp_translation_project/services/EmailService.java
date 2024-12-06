@@ -6,6 +6,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.io.File;
 
 @Service
 public class EmailService {
@@ -42,6 +45,26 @@ public class EmailService {
         helper.setSubject("Código de verificación");
         helper.setText("Tu código de verificación es: " + verificationCode, true);
         mailSender.send(message);
+    }
+
+    public void sendEmailWithAttachment(String to, String subject, String body, File attachment) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true); // 'true' to enable multipart support
+
+            helper.setTo(to);
+            helper.setFrom(getMailDirection());
+            helper.setSubject(subject);
+            helper.setText(body, false);
+
+            if (attachment != null && attachment.exists() && attachment.isFile()) {
+                helper.addAttachment(StringUtils.cleanPath(attachment.getName()), attachment);
+            }
+
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Failed to send email with attachment", e);
+        }
     }
 
     public String getMailDirection() {

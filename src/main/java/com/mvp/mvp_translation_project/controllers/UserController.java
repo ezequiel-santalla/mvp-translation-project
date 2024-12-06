@@ -2,20 +2,16 @@ package com.mvp.mvp_translation_project.controllers;
 
 import com.mvp.mvp_translation_project.models.User;
 import com.mvp.mvp_translation_project.models.UserDTO;
-import com.mvp.mvp_translation_project.models.UserRegistrationDTO;
-import com.mvp.mvp_translation_project.models.UserResponseDTO;
+import com.mvp.mvp_translation_project.models.UserRequestDTO;
 import com.mvp.mvp_translation_project.services.EmailService;
 import com.mvp.mvp_translation_project.services.UserService;
 import jakarta.validation.Valid;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/users")
@@ -44,14 +40,14 @@ public class UserController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponseDTO> registerUser (@RequestBody @Valid UserRegistrationDTO userRegistrationDTO) {
+    public ResponseEntity<UserDTO> registerUser (@RequestBody @Valid UserRequestDTO userRegistrationDTO) {
         // Verificar si el correo electrónico ya existe
         if (userService.emailExists(userRegistrationDTO.getEmail())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
         try {
             // Registrar al usuario
-            UserResponseDTO registeredUser  = userService.registerUser (userRegistrationDTO);
+            UserDTO registeredUser  = userService.registerUser (userRegistrationDTO);
             // Enviar el código al correo electrónico
             emailService.sendSimpleMail(registeredUser.getEmail(), "Welcome to Verbalia, "+registeredUser.getName(), "User created successfully");
 

@@ -3,8 +3,7 @@ package com.mvp.mvp_translation_project.services;
 import com.mvp.mvp_translation_project.exceptions.UserNotFoundException;
 import com.mvp.mvp_translation_project.models.User;
 import com.mvp.mvp_translation_project.models.UserDTO;
-import com.mvp.mvp_translation_project.models.UserRegistrationDTO;
-import com.mvp.mvp_translation_project.models.UserResponseDTO;
+import com.mvp.mvp_translation_project.models.UserRequestDTO;
 import com.mvp.mvp_translation_project.repositories.UserRepository;
 import com.mvp.mvp_translation_project.types.RoleType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +54,7 @@ public class UserService {
     public Boolean emailExists(String email) {
         return userRepository.findUserByEmail(email).isPresent();
     }
-    public UserResponseDTO registerUser(UserRegistrationDTO registrationDTO) {
+    public UserDTO registerUser(UserRequestDTO registrationDTO) {
         // Mapeo del DTO a la entidad
         User user = new User();
         user.setName(registrationDTO.getName());
@@ -83,12 +82,15 @@ public class UserService {
         return dto;
     }
 
-    private UserResponseDTO mapToResponseDTO(User user) {
-        UserResponseDTO responseDto = new UserResponseDTO();
+    private UserDTO mapToResponseDTO(User user) {
+        UserDTO responseDto = new UserDTO();
         responseDto.setName(user.getName());
         responseDto.setLastName(user.getLastName());
         responseDto.setEmail(user.getEmail());
         responseDto.setRole(user.getRole());
+        responseDto.setCellphone(user.getCellphone());
+        responseDto.setIdentityNumber(user.getIdentityNumber());
+        responseDto.setBirthDate(user.getBirthDate());
         return responseDto;
     }
 
