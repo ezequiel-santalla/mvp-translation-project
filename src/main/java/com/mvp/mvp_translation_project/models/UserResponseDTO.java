@@ -1,20 +1,17 @@
 package com.mvp.mvp_translation_project.models;
 
 import com.mvp.mvp_translation_project.types.RoleType;
-import lombok.*;
-
-import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
-public class UserDTO {
-
+public class UserResponseDTO {
     private String name;
     private String lastName;
-    private LocalDate birthDate;
-    private String identityNumber;
     private String email;
-    private String cellphone;
     private RoleType role;
 }

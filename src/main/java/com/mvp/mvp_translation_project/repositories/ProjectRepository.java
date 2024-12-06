@@ -32,7 +32,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     List<Project> findByNameContaining(String keyword);
 
-    List<Project> findByDescriptionContaining(String Keyword);
+    List<Project> findByDescriptionContaining(String keyword);
 
     List<Project> findByFinishedDate(LocalDateTime finishedDate);
 }
