@@ -3,12 +3,12 @@ package com.mvp.mvp_translation_project.controllers;
 import com.mvp.mvp_translation_project.exceptions.InvalidDataException;
 import com.mvp.mvp_translation_project.exceptions.InvalidPasswordException;
 import com.mvp.mvp_translation_project.exceptions.UserAlreadyExistsException;
-import com.mvp.mvp_translation_project.exceptions.UserNotFoundException;
-import com.mvp.mvp_translation_project.models.UserDto;
-import com.mvp.mvp_translation_project.models.UserRequestDto;
-import com.mvp.mvp_translation_project.models.UserUpdateDto;
+import com.mvp.mvp_translation_project.models.dto.UserDto;
+import com.mvp.mvp_translation_project.models.dto.UserRequestDto;
+import com.mvp.mvp_translation_project.models.dto.UserUpdateDto;
 import com.mvp.mvp_translation_project.services.EmailService;
 import com.mvp.mvp_translation_project.services.UserService;
+import com.mvp.mvp_translation_project.types.RoleType;
 import com.mvp.mvp_translation_project.utils.Utils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUsers() {
-        List<UserDto> users = userService.getAllUsers();
+        List<UserDto> users = userService.getActiveUsers();
         return ResponseEntity.ok(users);
     }
 
@@ -45,27 +45,24 @@ public class UserController {
     public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         // Validar que el ID no sea menor o igual a cero
         if (id <= 0) {
-            return ResponseEntity.badRequest().build(); // 400 Bad Request
+            throw new InvalidDataException("The ID provide is not valid: "+ id);
         }
-        try {
-            // Intentar obtener el usuario
-            UserDto userDto = userService.getUser(id);
-            return ResponseEntity.ok(userDto); // 200 OK
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); //404 Not Found
-        }
+        // Intentar obtener el usuario
+        UserDto userDto = userService.getUser(id);
+
+        return ResponseEntity.ok(userDto); // 200 OK
     }
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody @Valid UserRequestDto userRegistrationDTO) {
+    public ResponseEntity<UserDto> registerUser(@RequestBody @Valid UserRequestDto userRegistrationDTO) {
         // Verifica si el correo electrónico ya existe
         if (userService.emailExists(userRegistrationDTO.getEmail())) {
             throw new UserAlreadyExistsException("The email address '"
                     + userRegistrationDTO.getEmail() + "' is already registered.");
         }
 
-        UserDto registeredUser = userService.registerUser(userRegistrationDTO);
+        UserDto registeredUser = userService.registerUser(userRegistrationDTO, RoleType.TRANSLATOR);
 
         // Envía el código al correo electrónico
         emailService.sendSimpleMail(registeredUser.getEmail(), "Welcome to Verbalia, "
@@ -74,42 +71,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
     }
 
-    /*
-    @PostMapping("/register")
-    public ResponseEntity<UserDto> registerUser(
-            @RequestBody @Valid UserRequestDto userRegistrationDTO) {
-        // Verifica si el correo electronico ya existe
-        if (userService.emailExists(userRegistrationDTO.getEmail())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-        }
-        try {
-            UserDto registeredUser = userService.registerUser(userRegistrationDTO);
-            // Envia el código al correo electrónico
-            emailService.sendSimpleMail(registeredUser.getEmail(), "Welcome to Verbalia, "
-                    + registeredUser.getName(), "User created successfully");
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
-
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
-        }
-    }
-*/
 
     @DeleteMapping("/{email}")
     public ResponseEntity<Void> deleteUser(@PathVariable String email) {
 
         Long id = userService.findIdUserByEmail(email);
+        userService.softDeleteUser(id);
 
-        try {
-            userService.softDeleteUser(id);
-            return ResponseEntity.noContent().build(); // 204 No Content
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404 Not Found
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
-        }
+        return ResponseEntity.noContent().build(); // 204 No Content
     }
 
 
@@ -117,37 +86,41 @@ public class UserController {
     public ResponseEntity<UserDto> updateUserByEmail(
             @RequestParam String email,
             @RequestBody @Valid UserUpdateDto userUpdateDto) {
-        try {
-            UserDto updatedUser = userService.updateUserByDto(email, userUpdateDto);
-            return ResponseEntity.ok(updatedUser); // 200 OK
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND) // 404 Not Found
-                    .body(null);
-        } catch (Exception e) {
-            // Manejo de otras excepciones
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR) // 500 Internal Server Error
-                    .body(null);
-        }
+
+        UserDto updatedUser = userService.updateUserByDto(email, userUpdateDto);
+
+        return ResponseEntity.ok(updatedUser); // 200 OK
     }
+
 
     @PatchMapping("/change-password")
     public ResponseEntity<String> changePassword(
             @RequestParam String email,
             @RequestParam String currentPass,
             @RequestParam String newPass) {
-        try {
-            userService.changePassword(email, currentPass, newPass);
 
-            return ResponseEntity.ok("Password updated successfully");
+        // Validar que los datos no sean nulos o vacíos
+        if (email == null
+                || email.isBlank()
+                || currentPass == null
+                || currentPass.isBlank()
+                || newPass == null
+                || newPass.isBlank()) {
 
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (InvalidPasswordException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            throw new InvalidDataException("Email and passwords cannot be null or empty");
         }
+
+        // Validar que la nueva contraseña sea diferente de la actual
+        if (currentPass.equals(newPass)) {
+            throw new InvalidDataException("The new password cannot be the same as the current password.");
+        }
+
+        // Intentar cambiar la contraseña
+        userService.changePassword(email, currentPass, newPass);
+
+        return ResponseEntity.ok("Password updated successfully");
     }
+
 
 
     @GetMapping("/email/{email}")
@@ -155,17 +128,11 @@ public class UserController {
     public ResponseEntity<UserDto> getUser(@PathVariable String email) {
 
         if (Boolean.FALSE.equals(Utils.isValidEmail(email))) {
-            return ResponseEntity.badRequest().build(); // 400 Bad Request
+            throw new InvalidPasswordException();
         }
+        UserDto user = userService.findUserByEmail(email);
 
-        try {
-            UserDto user = userService.findUserByEmail(email);
-            return ResponseEntity.ok(user); // 200 OK
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404 Not Found
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 Internal Server Error
-        }
+        return ResponseEntity.ok(user); // 200 OK
     }
 
 }

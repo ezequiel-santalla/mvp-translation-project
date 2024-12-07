@@ -1,5 +1,6 @@
-package com.mvp.mvp_translation_project.models;
+package com.mvp.mvp_translation_project.models.dto;
 
+import com.mvp.mvp_translation_project.models.LanguagePair;
 import com.mvp.mvp_translation_project.types.PaymentType;
 import com.mvp.mvp_translation_project.types.TaskType;
 import lombok.*;

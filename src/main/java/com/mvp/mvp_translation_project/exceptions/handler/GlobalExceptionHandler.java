@@ -1,5 +1,7 @@
-package com.mvp.mvp_translation_project.exceptions;
+package com.mvp.mvp_translation_project.exceptions.handler;
 
+import com.mvp.mvp_translation_project.exceptions.*;
+import com.mvp.mvp_translation_project.models.dto.ErrorResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,9 +10,11 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -22,6 +26,15 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse("Unauthorized", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+
+    @ExceptionHandler(InvalidEmailException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidEmailException(InvalidPasswordException ex) {
+
+        ErrorResponse errorResponse = new ErrorResponse("Bad Request", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
 
@@ -89,6 +102,16 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
 
+    }
+
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<String> handleTypeMismatch(
+            MethodArgumentTypeMismatchException ex) {
+
+        return ResponseEntity.badRequest().body("Invalid parameter: "
+                + ex.getValue() + ". Expected type: "
+                + Objects.requireNonNull(ex.getRequiredType()).getSimpleName());
     }
 
 

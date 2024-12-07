@@ -1,9 +1,10 @@
 package com.mvp.mvp_translation_project.services;
 
-import com.mvp.mvp_translation_project.exceptions.DataAccessRuntimeException;
-import com.mvp.mvp_translation_project.exceptions.InvalidPasswordException;
-import com.mvp.mvp_translation_project.exceptions.UserNotFoundException;
+import com.mvp.mvp_translation_project.exceptions.*;
 import com.mvp.mvp_translation_project.models.*;
+import com.mvp.mvp_translation_project.models.dto.UserDto;
+import com.mvp.mvp_translation_project.models.dto.UserRequestDto;
+import com.mvp.mvp_translation_project.models.dto.UserUpdateDto;
 import com.mvp.mvp_translation_project.repositories.UserRepository;
 import com.mvp.mvp_translation_project.types.RoleType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +30,22 @@ public class UserService {
     public List<UserDto> getAllUsers() {
 
         try {
-            return userRepository.findByActiveTrue().stream()
+            return userRepository.findAll().stream()
                     .map(this::mapToDto).toList();
         } catch (DataAccessException e) {
             throw new DataAccessRuntimeException("No se pudo recuperar la lista de usuarios", e);
         }
     }
 
+    public List<UserDto> getActiveUsers() {
+
+        try {
+            return userRepository.findByActiveTrue().stream()
+                    .map(this::mapToDto).toList();
+        } catch (DataAccessException e) {
+            throw new DataAccessRuntimeException("No se pudo recuperar la lista de usuarios", e);
+        }
+    }
 
     public UserDto getUser(Long id) {
 
@@ -138,9 +148,9 @@ public class UserService {
     }
 
 
-    public UserDto registerUser(UserRequestDto userRequestDto) {
+    public UserDto registerUser(UserRequestDto userRequestDto, RoleType roleType) {
         // Mapea el UserRequestDto a una entidad User
-        User user = mapRequestToUser(userRequestDto);
+        User user = mapRequestToUser(userRequestDto, roleType);
 
         // Verificar si el correo ya existe, incluso si está marcado como eliminado
         Optional<Long> existingUserId = userRepository.findIdByEmail(user.getEmail());
@@ -157,6 +167,7 @@ public class UserService {
         return mapToDto(user);
     }
 
+
     public void softDeleteUser(Long id) {
 
         Optional<User> userOptional = userRepository.findById(id);
@@ -170,6 +181,36 @@ public class UserService {
             // Usuario no encontrado
             throw new UserNotFoundException(id);
         }
+    }
+
+
+    public boolean changeUserEmail(String oldEmail, String newEmail) {
+        // Validar que los correos no sean nulos o vacíos
+        if (oldEmail == null || oldEmail.isBlank() || newEmail == null || newEmail.isBlank()) {
+            throw new InvalidDataException("Emails cannot be null or empty");
+        }
+
+        // Validar que el nuevo correo no sea igual al anterior
+        if (oldEmail.equals(newEmail)) {
+            throw new InvalidDataException("The new email cannot be the same as the current email.");
+        }
+
+        // Verificar si el nuevo correo ya está en uso
+        if (emailExists(newEmail)) {
+            throw new UserAlreadyExistsException("The email " + newEmail + " is already in use.");
+        }
+
+        // Buscar el usuario por el correo electrónico anterior
+        User user = userRepository.findUserByEmail(oldEmail)
+                .orElseThrow(() -> new UserNotFoundException("User with email " + oldEmail + " not found"));
+
+        // Cambiar el correo electrónico
+        user.setEmail(newEmail);
+
+        // Guardar los cambios en la base de datos
+        userRepository.save(user);
+
+        return true;
     }
 
 
@@ -189,7 +230,7 @@ public class UserService {
         return userDto;
     }
 
-    private User mapRequestToUser(UserRequestDto userRequestDto) {
+    private User mapRequestToUser(UserRequestDto userRequestDto, RoleType roleType) {
 
         User user = new User();
 
@@ -201,7 +242,7 @@ public class UserService {
         user.setIdentityNumber(userRequestDto.getIdentityNumber());
         user.setCellphone(userRequestDto.getCellphone());
         user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
-        user.setRole(RoleType.TRANSLATOR);
+        user.setRole(roleType);
         user.setActive(true); // Activa el usuario por defecto
 
         return user;

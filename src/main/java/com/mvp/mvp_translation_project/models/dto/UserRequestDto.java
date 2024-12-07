@@ -1,4 +1,4 @@
-package com.mvp.mvp_translation_project.models;
+package com.mvp.mvp_translation_project.models.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
