@@ -52,37 +52,39 @@ public class UserService {
     }
 
     public UserDto updateUserByDto(String email, UserUpdateDto userUpdateDto) {
-        // Buscar el usuario por correo electrónico
-        Optional<User> optionalUser  = userRepository.findUserByEmail(email);
 
-        // Verificar si el usuario existe
-        if (optionalUser .isEmpty()) {
+        // Busca el usuario por email
+        Optional<User> optionalUser = userRepository.findUserByEmail(email);
+        // Verifica si el usuario existe
+        if (optionalUser.isEmpty()) {
             throw new UserNotFoundException();
         }
-
-        // Obtener el usuario existente
+        // Obtiene el usuario existente¿
         User user = optionalUser.get();
+        // Actualiza los campos del user con los nuevos datos
+        updateUserFields(user, userUpdateDto);
+        User updatedUser = userRepository.save(user);
+        return mapToDto(updatedUser);
 
-        // Mapear los campos del DTO al usuario existente
-        if(userUpdateDto.getLastName()!=null){
+    }
+
+    private void updateUserFields(User user, UserUpdateDto userUpdateDto) {
+
+        // Si el campo contiene un dato, lo actualiza
+        if (userUpdateDto.getLastName() != null) {
             user.setLastName(userUpdateDto.getLastName());
         }
-        if(userUpdateDto.getBirthDate()!=null){
+        if (userUpdateDto.getBirthDate() != null) {
             user.setBirthDate(userUpdateDto.getBirthDate());
         }
-        if(userUpdateDto.getCellphone()!=null){
+        if (userUpdateDto.getCellphone() != null) {
             user.setCellphone(userUpdateDto.getCellphone());
         }
-        if(userUpdateDto.getAddress()!=null){
+        if (userUpdateDto.getAddress() != null) {
             user.setAddress(userUpdateDto.getAddress());
         }
-
-        // Guardar el usuario actualizado
-        User updatedUser  = userRepository.save(user);
-
-        // Retornar el DTO del usuario actualizado
-        return mapToDto(updatedUser );
     }
+
 
     public User updateUser(User user) {
         // Valida que el usuario exista antes de actualizarlo
@@ -105,7 +107,6 @@ public class UserService {
         user.setPassword(hashedNewPassword);
         userRepository.save(user);
     }
-
 
 
     public void deleteUser(Long id) {
@@ -146,7 +147,7 @@ public class UserService {
         if (existingUserId.isPresent() && emailExistsDeleted(user.getEmail())) {
             // Si el correo estuvo registrado anteriormente, reactiva el registro
             user.setId(existingUserId.get());
-            updateUser(user); // Actualiza los datos del usuario existente
+            user = updateUser(user); // Actualiza los datos del usuario existente
         } else {
             // Si no existe, guarda el nuevo usuario
             user = userRepository.save(user);

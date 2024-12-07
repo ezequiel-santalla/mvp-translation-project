@@ -1,6 +1,8 @@
 package com.mvp.mvp_translation_project.controllers;
 
+import com.mvp.mvp_translation_project.exceptions.InvalidDataException;
 import com.mvp.mvp_translation_project.exceptions.InvalidPasswordException;
+import com.mvp.mvp_translation_project.exceptions.UserAlreadyExistsException;
 import com.mvp.mvp_translation_project.exceptions.UserNotFoundException;
 import com.mvp.mvp_translation_project.models.UserDto;
 import com.mvp.mvp_translation_project.models.UserRequestDto;
@@ -55,6 +57,24 @@ public class UserController {
 
 
     @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody @Valid UserRequestDto userRegistrationDTO) {
+        // Verifica si el correo electrónico ya existe
+        if (userService.emailExists(userRegistrationDTO.getEmail())) {
+            throw new UserAlreadyExistsException("The email address '"
+                    + userRegistrationDTO.getEmail() + "' is already registered.");
+        }
+
+        UserDto registeredUser = userService.registerUser(userRegistrationDTO);
+
+        // Envía el código al correo electrónico
+        emailService.sendSimpleMail(registeredUser.getEmail(), "Welcome to Verbalia, "
+                + registeredUser.getName(), "User  created successfully");
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
+    }
+
+    /*
+    @PostMapping("/register")
     public ResponseEntity<UserDto> registerUser(
             @RequestBody @Valid UserRequestDto userRegistrationDTO) {
         // Verifica si el correo electronico ya existe
@@ -74,7 +94,7 @@ public class UserController {
                     .body(null);
         }
     }
-
+*/
 
     @DeleteMapping("/{email}")
     public ResponseEntity<Void> deleteUser(@PathVariable String email) {
@@ -122,9 +142,9 @@ public class UserController {
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (InvalidPasswordException e) {
-            return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (Exception e) {
-            return  ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
