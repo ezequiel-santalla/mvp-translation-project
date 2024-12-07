@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.logging.Logger;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/users")
 
