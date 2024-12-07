@@ -1,13 +1,15 @@
 package com.mvp.mvp_translation_project.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter @Setter
+@Getter
+@Setter
 @EqualsAndHashCode
 @ToString
 @Entity
@@ -18,24 +20,33 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @NotBlank(message = "Country is required")
+    @Size(max = 50, message = "Country must not exceed 50 characters")
     private String country;
 
-    @Column(nullable = false, length = 50)
+    @NotBlank(message = "Province is required")
+    @Size(max = 50, message = "Province must not exceed 50 characters")
     private String province;
 
-    @Column(nullable = false, length = 50)
+    @NotBlank(message = "City is required")
+    @Size(max = 50, message = "City must not exceed 50 characters")
     private String city;
 
-    @Column(nullable = false, length = 50)
+    @NotBlank(message = "Street is required")
+    @Size(max = 50, message = "Street must not exceed 100 characters")
     private String street;
 
-    @Column(nullable = false, length = 50)
+    @NotBlank(message = "Number is required")
+    @Size(max = 10, message = "Number must not exceed 10 characters")
     private String number;
 
-    @Column(nullable = false, length = 10)
+    @NotBlank(message = "Zip Code is required")
+    @Pattern(regexp = "^[0-9]{5}(-[0-9]{4})?$", message = "Zip Code must be in the format 12345 or 12345-6789")
     private String zipCode;
 
-    @Column(nullable = false, length = 50)
+    @NotNull(message = "Creation Date is required")
+    @PastOrPresent(message = "Creation Date must be in the past or present")
+    @Column(nullable = false)
     private LocalDateTime creationDate;
+
 }

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
-public class UserRequestDTO {
+public class UserRequestDto {
 
     @NotBlank(message = "Name is required")
     private String name;

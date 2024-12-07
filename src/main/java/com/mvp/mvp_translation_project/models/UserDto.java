@@ -7,16 +7,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
-public class UserUpdateDTO {
+public class UserDto {
     private String name;
     private String lastName;
+    private LocalDate birthDate;
+    private String identityNumber;
     private String email;
     private String cellphone;
-    private Address address;
+    private RoleType role;
 }
