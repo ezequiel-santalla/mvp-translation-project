@@ -1,6 +1,5 @@
 package com.mvp.mvp_translation_project.models;
 
-import com.mvp.mvp_translation_project.types.RoleType;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
-public class UserRegistrationDTO {
+public class UserRequestDto {
 
     @NotBlank(message = "Name is required")
     private String name;
