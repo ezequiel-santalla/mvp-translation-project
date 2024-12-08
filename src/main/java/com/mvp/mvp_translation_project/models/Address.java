@@ -41,12 +41,16 @@ public class Address {
     private String number;
 
     @NotBlank(message = "Zip Code is required")
-    @Pattern(regexp = "^[0-9]{5}(-[0-9]{4})?$", message = "Zip Code must be in the format 12345 or 12345-6789")
+    @Pattern(regexp = "^\\d{4,5}(\\d{4})?$",
+            message = "Zip Code must be in the format 1234, 12345, or 12345-6789")
     private String zipCode;
 
-    @NotNull(message = "Creation Date is required")
     @PastOrPresent(message = "Creation Date must be in the past or present")
     @Column(nullable = false)
     private LocalDateTime creationDate;
 
+    @PrePersist
+    protected void onCreate() {
+        this.creationDate = LocalDateTime.now(); // Establece la fecha actual al persistir
+    }
 }

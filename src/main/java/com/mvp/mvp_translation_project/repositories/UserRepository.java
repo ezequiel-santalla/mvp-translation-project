@@ -1,5 +1,6 @@
 package com.mvp.mvp_translation_project.repositories;
 
+import com.mvp.mvp_translation_project.models.Address;
 import com.mvp.mvp_translation_project.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -24,4 +25,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     //devuelve el id de un usuario por medio de su email
     @Query("SELECT u.id FROM User u WHERE u.email = :email")
     Optional<Long> findIdByEmail(@Param("email") String email);
+
+    @Query("SELECT u.address FROM User u WHERE u.email = :email")
+    Optional<Address> findAddressByEmail(String email);
 }
+

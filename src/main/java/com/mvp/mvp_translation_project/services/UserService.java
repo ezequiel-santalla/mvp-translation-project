@@ -33,7 +33,7 @@ public class UserService {
             return userRepository.findAll().stream()
                     .map(this::mapToDto).toList();
         } catch (DataAccessException e) {
-            throw new DataAccessRuntimeException("No se pudo recuperar la lista de usuarios", e);
+            throw new DataAccessRuntimeException("Failed to retrieve user list", e);
         }
     }
 
@@ -43,7 +43,7 @@ public class UserService {
             return userRepository.findByActiveTrue().stream()
                     .map(this::mapToDto).toList();
         } catch (DataAccessException e) {
-            throw new DataAccessRuntimeException("No se pudo recuperar la lista de usuarios", e);
+            throw new DataAccessRuntimeException("Failed to retrieve user list", e);
         }
     }
 
@@ -63,14 +63,9 @@ public class UserService {
 
     public UserDto updateUserByDto(String email, UserUpdateDto userUpdateDto) {
 
-        // Busca el usuario por email
-        Optional<User> optionalUser = userRepository.findUserByEmail(email);
-        // Verifica si el usuario existe
-        if (optionalUser.isEmpty()) {
-            throw new UserNotFoundException();
-        }
-        // Obtiene el usuario existente¿
-        User user = optionalUser.get();
+        // Busca el usuario por email o lanza una excepcion si no existe
+        User user = userRepository.findUserByEmail(email).orElseThrow(()
+                -> new UserNotFoundException(email));
         // Actualiza los campos del user con los nuevos datos
         updateUserFields(user, userUpdateDto);
         User updatedUser = userRepository.save(user);
@@ -103,6 +98,18 @@ public class UserService {
         }
 
         return userRepository.save(user);
+    }
+
+    public void updateAddress(String email, Address address) {
+
+        if(address == null){
+            throw new InvalidDataException("Address cannot be null");
+        }
+
+        User user = userRepository.findUserByEmail(email).orElseThrow(()
+                -> new UserNotFoundException(email));
+        user.setAddress(address);
+        userRepository.save(user);
     }
 
     public void changePassword(String email, String currentPassword, String newPassword) {
@@ -213,6 +220,10 @@ public class UserService {
         return true;
     }
 
+    public Address getAddress(String email){
+
+        return userRepository.findAddressByEmail(email).orElseThrow(UserNotFoundException::new);
+    }
 
     private UserDto mapToDto(User user) {
 

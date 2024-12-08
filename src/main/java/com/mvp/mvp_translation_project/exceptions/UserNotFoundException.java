@@ -2,8 +2,8 @@ package com.mvp.mvp_translation_project.exceptions;
 
 public class UserNotFoundException extends RuntimeException {
 
-    public UserNotFoundException(String message) {
-        super(message);
+    public UserNotFoundException(String email) {
+        super("User was not found with Email "+ email);
     }
 
     public UserNotFoundException(Long id) {

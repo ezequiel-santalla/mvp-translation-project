@@ -3,6 +3,7 @@ package com.mvp.mvp_translation_project.controllers;
 import com.mvp.mvp_translation_project.exceptions.InvalidDataException;
 import com.mvp.mvp_translation_project.exceptions.InvalidPasswordException;
 import com.mvp.mvp_translation_project.exceptions.UserAlreadyExistsException;
+import com.mvp.mvp_translation_project.models.Address;
 import com.mvp.mvp_translation_project.models.dto.UserDto;
 import com.mvp.mvp_translation_project.models.dto.UserRequestDto;
 import com.mvp.mvp_translation_project.models.dto.UserUpdateDto;
@@ -45,7 +46,7 @@ public class UserController {
     public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         // Validar que el ID no sea menor o igual a cero
         if (id <= 0) {
-            throw new InvalidDataException("The ID provide is not valid: "+ id);
+            throw new InvalidDataException("The ID provide is not valid: " + id);
         }
         // Intentar obtener el usuario
         UserDto userDto = userService.getUser(id);
@@ -122,7 +123,6 @@ public class UserController {
     }
 
 
-
     @GetMapping("/email/{email}")
 
     public ResponseEntity<UserDto> getUser(@PathVariable String email) {
@@ -135,4 +135,20 @@ public class UserController {
         return ResponseEntity.ok(user); // 200 OK
     }
 
+    @PatchMapping("/update-address")
+    public ResponseEntity<String> updateAddress(
+            @RequestParam String email,
+            @RequestBody @Valid Address address) {
+
+        userService.updateAddress(email, address);
+
+        return ResponseEntity.ok("Address added successfully");
+    }
+
+
+    @GetMapping("/address/{email}")
+    public ResponseEntity<Address> getAddressUser(@PathVariable String email) {
+        Address address = userService.getAddress(email);
+        return ResponseEntity.ok(address);
+    }
 }
