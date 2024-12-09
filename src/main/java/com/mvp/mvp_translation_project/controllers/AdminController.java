@@ -1,5 +1,6 @@
 package com.mvp.mvp_translation_project.controllers;
 import com.mvp.mvp_translation_project.exceptions.UserAlreadyExistsException;
+import com.mvp.mvp_translation_project.models.User;
 import com.mvp.mvp_translation_project.models.dto.ChangeEmailRequest;
 import com.mvp.mvp_translation_project.models.dto.UserDto;
 import com.mvp.mvp_translation_project.models.dto.UserRequestDto;
@@ -72,4 +73,11 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update email.");
         }
     }
+
+    @GetMapping("/users/get-all-no-dto")
+    public ResponseEntity<List<User>> getAllUsersNoDto() {
+        List<User> users = userService.getUsers();
+        return ResponseEntity.ok(users);
+    }
+
 }

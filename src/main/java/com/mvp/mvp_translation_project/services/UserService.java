@@ -47,6 +47,15 @@ public class UserService {
         }
     }
 
+    public List<User> getUsers() {
+
+        try {
+            return userRepository.findAll();
+        } catch (DataAccessException e) {
+            throw new DataAccessRuntimeException("Failed to retrieve user list", e);
+        }
+    }
+
     public UserDto getUser(Long id) {
 
         return userRepository.findById(id).map(this::mapToDto).orElseThrow(()
@@ -223,6 +232,12 @@ public class UserService {
     public Address getAddress(String email){
 
         return userRepository.findAddressByEmail(email).orElseThrow(UserNotFoundException::new);
+    }
+
+    public User getUserByEmail(String email){
+        System.out.println(email);
+       return userRepository.findUserByEmail(email).orElseThrow(()
+                -> new UserNotFoundException(email));
     }
 
     private UserDto mapToDto(User user) {

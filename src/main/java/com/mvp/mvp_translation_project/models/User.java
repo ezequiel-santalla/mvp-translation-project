@@ -1,5 +1,6 @@
 package com.mvp.mvp_translation_project.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mvp.mvp_translation_project.types.RoleType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -60,7 +61,8 @@ public class User {
     private Address address;
 
     // Relación con Project
-    @OneToMany(mappedBy = "translator", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "translator")
+    @JsonIgnore
     private Set<Project> projects = new HashSet<>();
 
     // Relación con LanguagePair

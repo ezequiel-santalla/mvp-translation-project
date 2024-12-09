@@ -2,7 +2,10 @@ package com.mvp.mvp_translation_project.controllers;
 
 import com.mvp.mvp_translation_project.models.LanguagePair;
 import com.mvp.mvp_translation_project.models.Project;
+import com.mvp.mvp_translation_project.models.User;
+import com.mvp.mvp_translation_project.models.dto.UserDto;
 import com.mvp.mvp_translation_project.services.ProjectService;
+import com.mvp.mvp_translation_project.services.UserService;
 import com.mvp.mvp_translation_project.types.StatusType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +19,12 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final UserService userService;
 
     @Autowired
-    public ProjectController(ProjectService projectService) {
+    public ProjectController(ProjectService projectService, UserService userService) {
         this.projectService = projectService;
+        this.userService = userService;
     }
 
     // Obtener todos los proyectos
@@ -35,6 +40,21 @@ public class ProjectController {
 
         project.setStatus(StatusType.PENDING);
         return projectService.saveProject(project);
+    }
+
+    @PatchMapping("/add-user")
+    public void addUserToProject (
+            @RequestParam String userEmail, Long idProject) {
+
+        User user = userService.getUserByEmail(userEmail);
+        Project project = projectService.findProjectById(idProject);
+
+        user.getProjects().add(project); // Agregar el proyecto al usuario
+        userService.updateUser(user);
+
+       // project.setTranslator(user);// Establecer el traductor en el proyecto
+        //projectService.saveProject(project);
+
     }
 
     // Actualizar un proyecto dado su ID

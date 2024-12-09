@@ -55,8 +55,8 @@ public class Project {
     private ProjectPayment projectPayment;
 
     // Relación con User (Traductor)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_user")
+    @ManyToOne
+    @JoinColumn(name = "id_user", referencedColumnName = "id")
     private User translator;
 
     // Relación con LanguagePair (Solo un par de idiomas por proyecto)
