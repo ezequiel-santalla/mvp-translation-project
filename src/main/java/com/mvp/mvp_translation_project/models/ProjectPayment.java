@@ -22,12 +22,12 @@ public class ProjectPayment {
     @Column(nullable = false)
     private PaymentType paymentType;
 
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(precision = 10, scale = 2)
     private BigDecimal flatFee;
 
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(precision = 10, scale = 2)
     private BigDecimal rate;
 
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column
     private Integer quantity;
 }

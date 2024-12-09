@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/projects")
 public class ProjectController {
@@ -30,6 +31,9 @@ public class ProjectController {
     // Crear un proyecto
     @PostMapping
     public Project postProject(@RequestBody Project project) {
+        project.setStartingDate(LocalDateTime.from(LocalDateTime.now()));
+
+        project.setStatus(StatusType.PENDING);
         return projectService.saveProject(project);
     }
 

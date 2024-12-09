@@ -60,7 +60,7 @@ public class Project {
     private User translator;
 
     // Relación con LanguagePair (Solo un par de idiomas por proyecto)
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_language_pair", nullable = false)
     private LanguagePair languagePair;
 }
