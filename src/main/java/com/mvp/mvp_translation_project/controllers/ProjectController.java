@@ -34,7 +34,7 @@ public class ProjectController {
     }
 
     // Crear un proyecto
-    @PostMapping
+    @PostMapping("/register")
     public Project postProject(@RequestBody Project project) {
         project.setStartingDate(LocalDateTime.from(LocalDateTime.now()));
 
