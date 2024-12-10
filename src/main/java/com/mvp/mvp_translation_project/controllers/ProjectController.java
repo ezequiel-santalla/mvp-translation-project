@@ -3,6 +3,8 @@ package com.mvp.mvp_translation_project.controllers;
 import com.mvp.mvp_translation_project.models.LanguagePair;
 import com.mvp.mvp_translation_project.models.Project;
 import com.mvp.mvp_translation_project.models.User;
+import com.mvp.mvp_translation_project.models.dto.ProjectCreationDTO;
+import com.mvp.mvp_translation_project.models.dto.ProjectDto;
 import com.mvp.mvp_translation_project.models.dto.UserDto;
 import com.mvp.mvp_translation_project.services.ProjectService;
 import com.mvp.mvp_translation_project.services.UserService;
@@ -29,16 +31,13 @@ public class ProjectController {
 
     // Obtener todos los proyectos
     @GetMapping
-    public List<Project> getAllProjects() {
+    public List<ProjectDto> getAllProjects() {
         return projectService.findProjects();
     }
 
     // Crear un proyecto
     @PostMapping("/register")
-    public Project postProject(@RequestBody Project project) {
-        project.setStartingDate(LocalDateTime.from(LocalDateTime.now()));
-
-        project.setStatus(StatusType.PENDING);
+    public ProjectDto postProject(@RequestBody ProjectCreationDTO project) {
         return projectService.saveProject(project);
     }
 

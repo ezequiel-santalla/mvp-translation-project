@@ -62,7 +62,6 @@ public class User {
 
     // Relación con Project
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "translator")
-    @JsonIgnore
     private Set<Project> projects = new HashSet<>();
 
     // Relación con LanguagePair
