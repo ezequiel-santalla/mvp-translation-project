@@ -245,6 +245,7 @@ public class UserService {
         UserDto userDto = new UserDto();
 
         // Mapeo de la entidad al DTO
+        userDto.setId(user.getId());
         userDto.setName(user.getName());
         userDto.setLastName(user.getLastName());
         userDto.setEmail(user.getEmail());

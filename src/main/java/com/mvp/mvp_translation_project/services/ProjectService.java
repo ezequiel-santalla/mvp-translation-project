@@ -31,6 +31,7 @@ public class ProjectService {
     private ProjectDto mapToDto(Project p) {
         ProjectDto projectDto = new ProjectDto();
 
+        projectDto.setId(p.getId());
         projectDto.setName(p.getName());
         projectDto.setDescription(p.getDescription());
         projectDto.setTranslator(p.getTranslator() != null ? mapToDto(p.getTranslator()) : null);

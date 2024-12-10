@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter @Setter
 public class UserDto {
+    private Long id;
     private String name;
     private String lastName;
     private LocalDate birthDate;

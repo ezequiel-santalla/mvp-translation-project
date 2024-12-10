@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 
 public class ProjectDto {
-
+    private Long id;
     private String name;
     private String description;
     private UserDto translator;
