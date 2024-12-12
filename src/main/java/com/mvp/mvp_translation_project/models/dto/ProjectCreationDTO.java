@@ -1,6 +1,7 @@
 package com.mvp.mvp_translation_project.models.dto;
 
 import com.mvp.mvp_translation_project.models.LanguagePair;
+import com.mvp.mvp_translation_project.models.ProjectPayment;
 import com.mvp.mvp_translation_project.types.PaymentType;
 import com.mvp.mvp_translation_project.types.TaskType;
 import lombok.*;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter @Setter
 @EqualsAndHashCode
+@ToString
 
 public class ProjectCreationDTO {
 
@@ -21,8 +23,5 @@ public class ProjectCreationDTO {
     private String filePath;
     private TaskType taskType;
     private LanguagePair languagePair;
-    private PaymentType paymentType;
-    private BigDecimal flatFee;
-    private BigDecimal rate;
-    private Integer quantity;
+    private ProjectPayment projectPayment;
 }

@@ -32,6 +32,9 @@ public class LanguagePair {
     @Column(name = "target_language", nullable = false, length = 20)
     private LanguageType targetLanguage;
 
+    @Column(nullable = false)
+    private Boolean active = true;
+
     @ManyToMany(mappedBy = "languagePairs", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<User> users = new ArrayList<>();
 }
