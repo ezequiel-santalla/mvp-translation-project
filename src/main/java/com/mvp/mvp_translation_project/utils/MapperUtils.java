@@ -74,14 +74,8 @@ public class MapperUtils {
 
     public static Project mapToProject(ProjectCreationDTO projectCreationDTO) {
         Project project = new Project();
-        ProjectPayment projectPayment = new ProjectPayment();
 
-        projectPayment.setPaymentType(projectCreationDTO.getPaymentType());
-        projectPayment.setFlatFee(projectCreationDTO.getFlatFee());
-        projectPayment.setRate(projectCreationDTO.getRate());
-        projectPayment.setQuantity(projectCreationDTO.getQuantity()); // Asegúrate de usar getQuantity()
-        project.setProjectPayment(projectPayment);
-
+        project.setProjectPayment(projectCreationDTO.getProjectPayment());
         project.setName(projectCreationDTO.getName());
         project.setDescription(projectCreationDTO.getDescription());
         project.setDeadline(projectCreationDTO.getDeadline());
