@@ -2,11 +2,13 @@ package com.mvp.mvp_translation_project.services;
 
 import com.mvp.mvp_translation_project.exceptions.*;
 import com.mvp.mvp_translation_project.models.*;
+import com.mvp.mvp_translation_project.models.dto.ProjectDto;
 import com.mvp.mvp_translation_project.models.dto.UserDto;
 import com.mvp.mvp_translation_project.models.dto.UserRequestDto;
 import com.mvp.mvp_translation_project.models.dto.UserUpdateDto;
 import com.mvp.mvp_translation_project.repositories.UserRepository;
 import com.mvp.mvp_translation_project.types.RoleType;
+import com.mvp.mvp_translation_project.utils.MapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -31,7 +34,7 @@ public class UserService {
 
         try {
             return userRepository.findAll().stream()
-                    .map(this::mapToDto).toList();
+                    .map(MapperUtils::mapToDto).toList();
         } catch (DataAccessException e) {
             throw new DataAccessRuntimeException("Failed to retrieve user list", e);
         }
@@ -41,9 +44,9 @@ public class UserService {
 
         try {
             return userRepository.findByActiveTrue().stream()
-                    .map(this::mapToDto).toList();
+                    .map(MapperUtils::mapToDto).toList();
         } catch (DataAccessException e) {
-            throw new DataAccessRuntimeException("Failed to retrieve user list", e);
+            throw new DataAccessRuntimeException("Failed to retrieve active user list", e);
         }
     }
 
@@ -58,7 +61,7 @@ public class UserService {
 
     public UserDto getUser(Long id) {
 
-        return userRepository.findById(id).map(this::mapToDto).orElseThrow(()
+        return userRepository.findById(id).map(MapperUtils::mapToDto).orElseThrow(()
                 -> new UserNotFoundException(id));
     }
 
@@ -78,7 +81,7 @@ public class UserService {
         // Actualiza los campos del user con los nuevos datos
         updateUserFields(user, userUpdateDto);
         User updatedUser = userRepository.save(user);
-        return mapToDto(updatedUser);
+        return MapperUtils.mapToDto(updatedUser);
 
     }
 
@@ -111,7 +114,7 @@ public class UserService {
 
     public void updateAddress(String email, Address address) {
 
-        if(address == null){
+        if (address == null) {
             throw new InvalidDataException("Address cannot be null");
         }
 
@@ -143,7 +146,7 @@ public class UserService {
 
     public UserDto findUserByEmail(String email) {
 
-        return this.mapToDto(userRepository.findUserByEmailAndActiveTrue(email)
+        return MapperUtils.mapToDto(userRepository.findUserByEmailAndActiveTrue(email)
                 .orElseThrow(UserNotFoundException::new));
     }
 
@@ -153,6 +156,13 @@ public class UserService {
         return userRepository.findIdByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 
+    public List<ProjectDto> findProjectsByEmail(String email) {
+        return userRepository.findProjectsByEmail(email)
+                .map(projects -> projects.stream()
+                        .map(MapperUtils::mapProjectToDto)
+                        .collect(Collectors.toList()))
+                .orElseThrow(() -> new UserNotFoundException(email));
+    }
 
     public boolean emailExists(String email) {
         return userRepository.findUserByEmailAndActiveTrue(email).isPresent();
@@ -166,7 +176,7 @@ public class UserService {
 
     public UserDto registerUser(UserRequestDto userRequestDto, RoleType roleType) {
         // Mapea el UserRequestDto a una entidad User
-        User user = mapRequestToUser(userRequestDto, roleType);
+        User user = MapperUtils.mapRequestToUser(userRequestDto, roleType);
 
         // Verificar si el correo ya existe, incluso si está marcado como eliminado
         Optional<Long> existingUserId = userRepository.findIdByEmail(user.getEmail());
@@ -180,7 +190,7 @@ public class UserService {
         }
 
         // Retorna un DTO con la información del usuario
-        return mapToDto(user);
+        return MapperUtils.mapToDto(user);
     }
 
 
@@ -229,50 +239,15 @@ public class UserService {
         return true;
     }
 
-    public Address getAddress(String email){
+    public Address getAddress(String email) {
 
         return userRepository.findAddressByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 
-    public User getUserByEmail(String email){
-        System.out.println(email);
-       return userRepository.findUserByEmail(email).orElseThrow(()
+    public User getUserByEmail(String email) {
+
+        return userRepository.findUserByEmail(email).orElseThrow(()
                 -> new UserNotFoundException(email));
-    }
-
-    private UserDto mapToDto(User user) {
-
-        UserDto userDto = new UserDto();
-
-        // Mapeo de la entidad al DTO
-        userDto.setId(user.getId());
-        userDto.setName(user.getName());
-        userDto.setLastName(user.getLastName());
-        userDto.setEmail(user.getEmail());
-        userDto.setRole(user.getRole());
-        userDto.setCellphone(user.getCellphone());
-        userDto.setIdentityNumber(user.getIdentityNumber());
-        userDto.setBirthDate(user.getBirthDate());
-
-        return userDto;
-    }
-
-    private User mapRequestToUser(UserRequestDto userRequestDto, RoleType roleType) {
-
-        User user = new User();
-
-        // Mapeo del DTO a la entidad
-        user.setName(userRequestDto.getName());
-        user.setLastName(userRequestDto.getLastName());
-        user.setEmail(userRequestDto.getEmail());
-        user.setBirthDate(userRequestDto.getBirthDate());
-        user.setIdentityNumber(userRequestDto.getIdentityNumber());
-        user.setCellphone(userRequestDto.getCellphone());
-        user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
-        user.setRole(roleType);
-        user.setActive(true); // Activa el usuario por defecto
-
-        return user;
     }
 
 

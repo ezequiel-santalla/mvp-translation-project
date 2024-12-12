@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidPasswordException.class)
     public ResponseEntity<ErrorResponse> handleInvalidPasswordException(InvalidPasswordException ex) {
 
-        ErrorResponse errorResponse = new ErrorResponse("Unauthorized", ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.UNAUTHORIZED.getReasonPhrase(), ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidEmailException.class)
     public ResponseEntity<ErrorResponse> handleInvalidEmailException(InvalidPasswordException ex) {
 
-        ErrorResponse errorResponse = new ErrorResponse("Bad Request", ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
 
-        ErrorResponse errorResponse = new ErrorResponse("Not Found", ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.getReasonPhrase(), ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
@@ -50,8 +50,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataAccessRuntimeException.class)
     public ResponseEntity<ErrorResponse> handleDataAccessException(DataAccessRuntimeException ex) {
 
-        ErrorResponse errorResponse = new ErrorResponse("Internal Server Error",
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
                 "Database access error: " + ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    }
+
+    @ExceptionHandler(EmailSendingException.class)
+    public ResponseEntity<ErrorResponse> handleEmailSendingException(EmailSendingException ex) {
+
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
@@ -60,7 +68,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidDataException.class)
     public ResponseEntity<ErrorResponse> handleInvalidDataException(InvalidDataException ex) {
 
-        ErrorResponse errorResponse = new ErrorResponse("Bad Request", ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(InvalidAuthTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidAuthTokenException(InvalidAuthTokenException ex) {
+
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
@@ -70,7 +86,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(
             UserAlreadyExistsException ex) {
 
-        ErrorResponse errorResponse = new ErrorResponse("Conflict", ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.CONFLICT.getReasonPhrase(), ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
@@ -97,7 +113,7 @@ public class GlobalExceptionHandler {
             DataIntegrityViolationException ex) {
 
         ErrorResponse errorResponse = new ErrorResponse(
-                "Conflict", "Duplicate entry detected: "
+                HttpStatus.CONFLICT.getReasonPhrase(), "Duplicate entry detected: "
                 + ex.getMostSpecificCause().getMessage());
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
@@ -119,7 +135,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
 
         ErrorResponse errorResponse = new ErrorResponse(
-                "Internal Server Error",
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
                 "An unexpected error occurred: "
                         + ex.getMessage());
 

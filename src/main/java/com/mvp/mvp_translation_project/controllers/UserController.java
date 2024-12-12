@@ -4,9 +4,7 @@ import com.mvp.mvp_translation_project.exceptions.InvalidDataException;
 import com.mvp.mvp_translation_project.exceptions.InvalidPasswordException;
 import com.mvp.mvp_translation_project.exceptions.UserAlreadyExistsException;
 import com.mvp.mvp_translation_project.models.Address;
-import com.mvp.mvp_translation_project.models.dto.UserDto;
-import com.mvp.mvp_translation_project.models.dto.UserRequestDto;
-import com.mvp.mvp_translation_project.models.dto.UserUpdateDto;
+import com.mvp.mvp_translation_project.models.dto.*;
 import com.mvp.mvp_translation_project.services.EmailService;
 import com.mvp.mvp_translation_project.services.UserService;
 import com.mvp.mvp_translation_project.types.RoleType;
@@ -150,5 +148,11 @@ public class UserController {
     public ResponseEntity<Address> getAddressUser(@PathVariable String email) {
         Address address = userService.getAddress(email);
         return ResponseEntity.ok(address);
+    }
+
+    @GetMapping("projects/{email}")
+    public ResponseEntity<List<ProjectDto>> getProjectsOfUser(@PathVariable String email){
+        List<ProjectDto> projects = userService.findProjectsByEmail(email);
+        return ResponseEntity.ok(projects);
     }
 }

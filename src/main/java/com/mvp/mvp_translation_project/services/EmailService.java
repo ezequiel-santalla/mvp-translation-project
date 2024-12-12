@@ -1,5 +1,6 @@
 package com.mvp.mvp_translation_project.services;
 
+import com.mvp.mvp_translation_project.exceptions.EmailSendingException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.SimpleMailMessage;
@@ -13,6 +14,7 @@ import java.io.File;
 @Service
 public class EmailService {
     private final JavaMailSender mailSender;
+    private static final String ENCODING = "utf-8";
 
     public EmailService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
@@ -23,7 +25,7 @@ public class EmailService {
         message.setTo(to);
         message.setFrom(getMailDirection());
         message.setSubject("Test Email");
-        message.setText("This is a test email from "+getMailDirection());
+        message.setText("This is a test email from " + getMailDirection());
         mailSender.send(message);
     }
 
@@ -37,9 +39,45 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    public void sendPreRegisterEmail(String toEmail, String preRegisterToken) {
+        MimeMessage message = mailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, false, ENCODING);
+            helper.setTo(toEmail);
+            helper.setFrom(getMailDirection());
+            helper.setSubject("Pre-registration Token");
+            helper.setText("Enter your email and the token and complete your registration details. The token is valid for 48 hours.");
+            helper.setText("Token: " + preRegisterToken, true);
+        } catch (MessagingException e) {
+            throw new EmailSendingException(toEmail, "Pre-registration User", e);
+        }
+        mailSender.send(message);
+    }
+
+    public void sendRecoveryEmail(String toEmail, String recoveryToken) {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = null;
+        try {
+            helper = new MimeMessageHelper(message, false, ENCODING);
+            helper.setTo(toEmail);
+            helper.setFrom(getMailDirection());
+            helper.setSubject("Recovery Token");
+
+            String recoveryLink = "link=" + recoveryToken;
+            String emailContent = "<p>Go to the following link and enter the token, then change your password:</p>"
+                    + "<p><a href=\"" + recoveryLink + "\">" + recoveryLink + "</a></p>"
+                    + "<p>Token: " + recoveryToken + "</p>";
+
+            helper.setText(emailContent, true);
+        } catch (MessagingException e) {
+            throw new EmailSendingException(toEmail, "Account Recovery", e);
+        }
+        mailSender.send(message);
+    }
+
     public void sendVerificationEmail(String toEmail, String verificationCode) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, false, "utf-8");
+        MimeMessageHelper helper = new MimeMessageHelper(message, false, ENCODING);
         helper.setTo(toEmail);
         helper.setFrom(getMailDirection());
         helper.setSubject("Código de verificación");
@@ -63,7 +101,7 @@ public class EmailService {
 
             mailSender.send(message);
         } catch (MessagingException e) {
-            throw new RuntimeException("Failed to send email with attachment", e);
+            throw new EmailSendingException("Failed to send email with attachment", e);
         }
     }
 
