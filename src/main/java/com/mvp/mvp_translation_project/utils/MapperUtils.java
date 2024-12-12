@@ -1,5 +1,6 @@
 package com.mvp.mvp_translation_project.utils;
 
+import com.mvp.mvp_translation_project.models.LanguagePair;
 import com.mvp.mvp_translation_project.models.Project;
 import com.mvp.mvp_translation_project.models.ProjectPayment;
 import com.mvp.mvp_translation_project.models.User;
@@ -54,6 +55,7 @@ public class MapperUtils {
         return user;
     }
 
+    // Mapear de Project a ProjectDto
     public static ProjectDto mapProjectToDto(Project p) {
         ProjectDto projectDto = new ProjectDto();
 
@@ -67,30 +69,29 @@ public class MapperUtils {
         projectDto.setStartingDate(p.getStartingDate());
         projectDto.setTaskType(p.getTaskType());
         projectDto.setLanguagePair(p.getLanguagePair());
+        projectDto.setProjectPayment(p.getProjectPayment());
         projectDto.setStatus(p.getStatus());
 
         return projectDto;
     }
 
+    // Mapear de ProjectCreationDTO a Project
     public static Project mapToProject(ProjectCreationDTO projectCreationDTO) {
         Project project = new Project();
-        ProjectPayment projectPayment = new ProjectPayment();
 
-        projectPayment.setPaymentType(projectCreationDTO.getPaymentType());
-        projectPayment.setFlatFee(projectCreationDTO.getFlatFee());
-        projectPayment.setRate(projectCreationDTO.getRate());
-        projectPayment.setQuantity(projectCreationDTO.getQuantity()); // Asegúrate de usar getQuantity()
-        project.setProjectPayment(projectPayment);
+        // Buscar o crear el LanguagePair
+        project.setLanguagePair(projectCreationDTO.getLanguagePair());
 
+        project.setProjectPayment(projectCreationDTO.getProjectPayment());
         project.setName(projectCreationDTO.getName());
         project.setDescription(projectCreationDTO.getDescription());
         project.setDeadline(projectCreationDTO.getDeadline());
         project.setFilePath(projectCreationDTO.getFilePath());
         project.setStartingDate(LocalDateTime.now());
         project.setTaskType(projectCreationDTO.getTaskType());
-        project.setLanguagePair(projectCreationDTO.getLanguagePair());
         project.setStatus(StatusType.PENDING);
 
         return project;
     }
+
 }

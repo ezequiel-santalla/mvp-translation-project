@@ -10,6 +10,7 @@ import com.mvp.mvp_translation_project.models.dto.UserDto;
 import com.mvp.mvp_translation_project.repositories.LanguagePairRepository;
 import com.mvp.mvp_translation_project.repositories.ProjectRepository;
 import com.mvp.mvp_translation_project.types.StatusType;
+import com.mvp.mvp_translation_project.utils.MapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -29,45 +30,6 @@ public class ProjectService {
         this.languagePairRepository = languagePairRepository;
     }
 
-    // Mapear de Project a ProjectDto
-    private ProjectDto mapToDto(Project p) {
-        ProjectDto projectDto = new ProjectDto();
-
-        projectDto.setId(p.getId());
-        projectDto.setName(p.getName());
-        projectDto.setDescription(p.getDescription());
-        projectDto.setTranslator(p.getTranslator() != null ? mapToDto(p.getTranslator()) : null);
-        projectDto.setDeadline(p.getDeadline());
-        projectDto.setFilePath(p.getFilePath());
-        projectDto.setFinishedDate(p.getFinishedDate());
-        projectDto.setStartingDate(p.getStartingDate());
-        projectDto.setTaskType(p.getTaskType());
-        projectDto.setLanguagePair(p.getLanguagePair());
-        projectDto.setProjectPayment(p.getProjectPayment());
-        projectDto.setStatus(p.getStatus());
-
-        return projectDto;
-    }
-
-    // Mapear de ProjectCreationDTO a Project
-    private Project mapToProject(ProjectCreationDTO projectCreationDTO) {
-        Project project = new Project();
-
-        // Buscar o crear el LanguagePair
-        LanguagePair languagePair = findOrCreateLanguagePair(projectCreationDTO.getLanguagePair());
-        project.setLanguagePair(languagePair);
-
-        project.setProjectPayment(projectCreationDTO.getProjectPayment());
-        project.setName(projectCreationDTO.getName());
-        project.setDescription(projectCreationDTO.getDescription());
-        project.setDeadline(projectCreationDTO.getDeadline());
-        project.setFilePath(projectCreationDTO.getFilePath());
-        project.setStartingDate(LocalDateTime.now());
-        project.setTaskType(projectCreationDTO.getTaskType());
-        project.setStatus(StatusType.PENDING);
-
-        return project;
-    }
 
     // Buscar o crear un LanguagePair único
     private LanguagePair findOrCreateLanguagePair(LanguagePair inputPair) {
@@ -103,7 +65,8 @@ public class ProjectService {
     // Crear un nuevo proyecto
     public ProjectDto saveProject(ProjectCreationDTO projectCreationDTO) {
         validateProject(projectCreationDTO);
-        Project project = mapToProject(projectCreationDTO);
+        projectCreationDTO.setLanguagePair(findOrCreateLanguagePair(projectCreationDTO.getLanguagePair()));
+        Project project = MapperUtils.mapToProject(projectCreationDTO);
 
         try {
             projectRepository.save(project);
@@ -111,14 +74,14 @@ public class ProjectService {
             throw new DataAccessRuntimeException("Failed to save the project", e);
         }
 
-        return mapToDto(project);
+        return MapperUtils.mapProjectToDto(project);
     }
 
     // Otros métodos de búsqueda y CRUD
     public List<ProjectDto> findProjects() {
         try {
             return projectRepository.findAll().stream()
-                    .map(this::mapToDto).toList();
+                    .map(MapperUtils::mapProjectToDto).toList();
         } catch (DataAccessException e) {
             throw new DataAccessRuntimeException("Failed to retrieve project list", e);
         }
@@ -173,23 +136,6 @@ public class ProjectService {
 
     // Métodos adicionales para búsquedas específicas...
 
-    private UserDto mapToDto(User user) {
-        if (user == null) {
-            return null;
-        }
-
-        UserDto userDto = new UserDto();
-
-        userDto.setName(user.getName());
-        userDto.setLastName(user.getLastName());
-        userDto.setEmail(user.getEmail());
-        userDto.setRole(user.getRole());
-        userDto.setCellphone(user.getCellphone());
-        userDto.setIdentityNumber(user.getIdentityNumber());
-        userDto.setBirthDate(user.getBirthDate());
-
-        return userDto;
-    }
 
     public List<Project> findProjectsStartingAfter(LocalDateTime startingDate) {
         return projectRepository.findByStartingDateAfter(startingDate);
