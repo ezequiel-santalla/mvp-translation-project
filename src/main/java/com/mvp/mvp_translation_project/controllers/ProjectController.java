@@ -8,6 +8,7 @@ import com.mvp.mvp_translation_project.models.dto.ProjectDto;
 import com.mvp.mvp_translation_project.models.dto.UserDto;
 import com.mvp.mvp_translation_project.services.ProjectService;
 import com.mvp.mvp_translation_project.services.UserService;
+import com.mvp.mvp_translation_project.types.LanguageType;
 import com.mvp.mvp_translation_project.types.StatusType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -57,8 +58,8 @@ public class ProjectController {
     }
 
     // Actualizar un proyecto dado su ID
-    @PutMapping("/{id}")
-    public Project putProject(@PathVariable Long id, @RequestBody Project project) {
+    @PutMapping("/update")
+    public Project putProject(@RequestParam Long id, @RequestBody Project project) {
         return projectService.updateProject(id, project);
     }
 

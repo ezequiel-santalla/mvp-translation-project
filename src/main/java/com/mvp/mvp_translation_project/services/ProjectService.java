@@ -3,18 +3,17 @@ package com.mvp.mvp_translation_project.services;
 import com.mvp.mvp_translation_project.exceptions.DataAccessRuntimeException;
 import com.mvp.mvp_translation_project.models.LanguagePair;
 import com.mvp.mvp_translation_project.models.Project;
-import com.mvp.mvp_translation_project.models.ProjectPayment;
 import com.mvp.mvp_translation_project.models.User;
 import com.mvp.mvp_translation_project.models.dto.ProjectCreationDTO;
 import com.mvp.mvp_translation_project.models.dto.ProjectDto;
 import com.mvp.mvp_translation_project.models.dto.UserDto;
+import com.mvp.mvp_translation_project.repositories.LanguagePairRepository;
 import com.mvp.mvp_translation_project.repositories.ProjectRepository;
 import com.mvp.mvp_translation_project.types.StatusType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,12 +21,15 @@ import java.util.List;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final LanguagePairRepository languagePairRepository;
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepository) {
+    public ProjectService(ProjectRepository projectRepository, LanguagePairRepository languagePairRepository) {
         this.projectRepository = projectRepository;
+        this.languagePairRepository = languagePairRepository;
     }
 
+    // Mapear de Project a ProjectDto
     private ProjectDto mapToDto(Project p) {
         ProjectDto projectDto = new ProjectDto();
 
@@ -41,49 +43,85 @@ public class ProjectService {
         projectDto.setStartingDate(p.getStartingDate());
         projectDto.setTaskType(p.getTaskType());
         projectDto.setLanguagePair(p.getLanguagePair());
+        projectDto.setProjectPayment(p.getProjectPayment());
         projectDto.setStatus(p.getStatus());
 
         return projectDto;
     }
 
+    // Mapear de ProjectCreationDTO a Project
     private Project mapToProject(ProjectCreationDTO projectCreationDTO) {
         Project project = new Project();
-        ProjectPayment projectPayment = new ProjectPayment();
 
-        projectPayment.setPaymentType(projectCreationDTO.getPaymentType());
-        projectPayment.setFlatFee(projectCreationDTO.getFlatFee());
-        projectPayment.setRate(projectCreationDTO.getRate());
-        projectPayment.setQuantity(projectCreationDTO.getQuantity()); // Asegúrate de usar getQuantity()
-        project.setProjectPayment(projectPayment);
+        // Buscar o crear el LanguagePair
+        LanguagePair languagePair = findOrCreateLanguagePair(projectCreationDTO.getLanguagePair());
+        project.setLanguagePair(languagePair);
 
+        project.setProjectPayment(projectCreationDTO.getProjectPayment());
         project.setName(projectCreationDTO.getName());
         project.setDescription(projectCreationDTO.getDescription());
         project.setDeadline(projectCreationDTO.getDeadline());
         project.setFilePath(projectCreationDTO.getFilePath());
         project.setStartingDate(LocalDateTime.now());
         project.setTaskType(projectCreationDTO.getTaskType());
-        project.setLanguagePair(projectCreationDTO.getLanguagePair());
         project.setStatus(StatusType.PENDING);
 
         return project;
     }
 
+    // Buscar o crear un LanguagePair único
+    private LanguagePair findOrCreateLanguagePair(LanguagePair inputPair) {
+        if (inputPair.getSourceLanguage().equals(inputPair.getTargetLanguage())) {
+            System.out.println("Los idiomas no pueden ser iguales");
+            return null;
+        }
 
+        return languagePairRepository.findBySourceLanguageAndTargetLanguage(
+                inputPair.getSourceLanguage(),
+                inputPair.getTargetLanguage()
+        ).orElseGet(() -> {
+            LanguagePair newPair = new LanguagePair();
+            newPair.setSourceLanguage(inputPair.getSourceLanguage());
+            newPair.setTargetLanguage(inputPair.getTargetLanguage());
+            return languagePairRepository.save(newPair);
+        });
+    }
+
+    // Validar los datos del proyecto antes de guardarlo
+    private void validateProject(ProjectCreationDTO dto) {
+        if (dto.getName() == null || dto.getName().isEmpty()) {
+            throw new IllegalArgumentException("Project name is required.");
+        }
+        if (dto.getDeadline() != null && dto.getDeadline().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Deadline must be a future date.");
+        }
+        if (dto.getLanguagePair() == null) {
+            throw new IllegalArgumentException("Language pair is required.");
+        }
+    }
+
+    // Crear un nuevo proyecto
+    public ProjectDto saveProject(ProjectCreationDTO projectCreationDTO) {
+        validateProject(projectCreationDTO);
+        Project project = mapToProject(projectCreationDTO);
+
+        try {
+            projectRepository.save(project);
+        } catch (DataAccessException e) {
+            throw new DataAccessRuntimeException("Failed to save the project", e);
+        }
+
+        return mapToDto(project);
+    }
+
+    // Otros métodos de búsqueda y CRUD
     public List<ProjectDto> findProjects() {
         try {
             return projectRepository.findAll().stream()
                     .map(this::mapToDto).toList();
         } catch (DataAccessException e) {
-            throw new DataAccessRuntimeException("Failed to retrieve user list", e);
+            throw new DataAccessRuntimeException("Failed to retrieve project list", e);
         }
-    }
-
-    public ProjectDto saveProject(ProjectCreationDTO projectCreationDTO) {
-        Project project = mapToProject(projectCreationDTO);
-
-        projectRepository.save(project);
-
-        return mapToDto(project);
     }
 
     public Project updateProject(Long id, Project p) {
@@ -98,19 +136,31 @@ public class ProjectService {
             existingProject.setStatus(p.getStatus());
             existingProject.setFilePath(p.getFilePath());
             existingProject.setTranslator(p.getTranslator());
-            existingProject.setLanguagePair(p.getLanguagePair());
+            existingProject.setLanguagePair(findOrCreateLanguagePair(p.getLanguagePair()));
 
-            return projectRepository.save(existingProject);
+            try {
+                return projectRepository.save(existingProject);
+            } catch (DataAccessException e) {
+                throw new DataAccessRuntimeException("Failed to update the project", e);
+            }
         }
         return null;
     }
 
     public void deleteProject(Long id) {
-        projectRepository.deleteById(id);
+        try {
+            projectRepository.deleteById(id);
+        } catch (DataAccessException e) {
+            throw new DataAccessRuntimeException("Failed to delete the project", e);
+        }
     }
 
     public Project findProjectById(Long id) {
-        return projectRepository.findById(id).orElse(null);
+        try {
+            return projectRepository.findById(id).orElse(null);
+        } catch (DataAccessException e) {
+            throw new DataAccessRuntimeException("Failed to find the project", e);
+        }
     }
 
     public List<Project> findProjectsByStatus(StatusType status) {
@@ -119,6 +169,26 @@ public class ProjectService {
 
     public List<Project> findProjectsByName(String name) {
         return projectRepository.findByName(name);
+    }
+
+    // Métodos adicionales para búsquedas específicas...
+
+    private UserDto mapToDto(User user) {
+        if (user == null) {
+            return null;
+        }
+
+        UserDto userDto = new UserDto();
+
+        userDto.setName(user.getName());
+        userDto.setLastName(user.getLastName());
+        userDto.setEmail(user.getEmail());
+        userDto.setRole(user.getRole());
+        userDto.setCellphone(user.getCellphone());
+        userDto.setIdentityNumber(user.getIdentityNumber());
+        userDto.setBirthDate(user.getBirthDate());
+
+        return userDto;
     }
 
     public List<Project> findProjectsStartingAfter(LocalDateTime startingDate) {
@@ -160,23 +230,4 @@ public class ProjectService {
     public List<Project> findProjectsByFinishedDate(LocalDateTime finishedDate) {
         return projectRepository.findByFinishedDate(finishedDate);
     }
-
-    private UserDto mapToDto(User user) {
-        if (user == null) {
-            return null; // O lanza una excepción personalizada, dependiendo de la lógica
-        }
-
-        UserDto userDto = new UserDto();
-
-        userDto.setName(user.getName());
-        userDto.setLastName(user.getLastName());
-        userDto.setEmail(user.getEmail());
-        userDto.setRole(user.getRole());
-        userDto.setCellphone(user.getCellphone());
-        userDto.setIdentityNumber(user.getIdentityNumber());
-        userDto.setBirthDate(user.getBirthDate());
-
-        return userDto;
-    }
-
 }

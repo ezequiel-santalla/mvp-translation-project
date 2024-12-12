@@ -1,6 +1,7 @@
 package com.mvp.mvp_translation_project.models.dto;
 
 import com.mvp.mvp_translation_project.models.LanguagePair;
+import com.mvp.mvp_translation_project.models.ProjectPayment;
 import com.mvp.mvp_translation_project.types.PaymentType;
 import com.mvp.mvp_translation_project.types.StatusType;
 import com.mvp.mvp_translation_project.types.TaskType;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter @Setter
 @EqualsAndHashCode
+@ToString
 
 public class ProjectDto {
     private Long id;
@@ -25,5 +27,6 @@ public class ProjectDto {
     private String filePath;
     private TaskType taskType;
     private LanguagePair languagePair;
+    private ProjectPayment projectPayment;
     private StatusType status;
 }

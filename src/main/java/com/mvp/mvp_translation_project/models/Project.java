@@ -50,7 +50,7 @@ public class Project {
     private TaskType taskType;
 
     // Relación con ProjectPayment
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "id_payment", referencedColumnName = "id")
     private ProjectPayment projectPayment;
 
