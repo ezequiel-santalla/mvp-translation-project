@@ -57,7 +57,7 @@ public class AuthTokenController {
             @RequestParam String email,
             @RequestParam String token) {
 
-        authTokenService.validateRegistration(email, token);
+       authTokenService.validateRegistration(email, token);
 
         return ResponseEntity.ok("Registration confirmed successfully.");
     }

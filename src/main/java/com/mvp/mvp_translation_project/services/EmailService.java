@@ -46,8 +46,10 @@ public class EmailService {
             helper.setTo(toEmail);
             helper.setFrom(getMailDirection());
             helper.setSubject("Pre-registration Token");
-            helper.setText("Enter your email and the token and complete your registration details. The token is valid for 48 hours.");
-            helper.setText("Token: " + preRegisterToken, true);
+            String emailContent = "<p>Enter your email and the token and complete your registration details.</p>"
+                    + "<p>The token is valid for 48 hours.</p>"
+                    + "<p>Token: <strong>" + preRegisterToken + "</strong></p>";
+            helper.setText(emailContent, true);
         } catch (MessagingException e) {
             throw new EmailSendingException(toEmail, "Pre-registration User", e);
         }

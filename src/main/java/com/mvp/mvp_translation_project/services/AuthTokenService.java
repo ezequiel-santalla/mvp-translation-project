@@ -1,6 +1,7 @@
 package com.mvp.mvp_translation_project.services;
 
 import com.mvp.mvp_translation_project.exceptions.InvalidAuthTokenException;
+import com.mvp.mvp_translation_project.exceptions.TokenNotFoundException;
 import com.mvp.mvp_translation_project.models.AuthToken;
 import com.mvp.mvp_translation_project.repositories.AuthTokenRepository;
 import com.mvp.mvp_translation_project.types.TokenType;
@@ -44,6 +45,7 @@ public class AuthTokenService {
         recoveryToken.setExpiration(LocalDateTime.now().plusMinutes(20));
         recoveryToken.setTokenType(TokenType.RECOVERY);
         recoveryToken.setUsed(false);
+        authTokenRepository.save(recoveryToken);
 
         return token;
     }
@@ -59,7 +61,7 @@ public class AuthTokenService {
         preRegistrationToken.setExpiration(LocalDateTime.now().plusDays(2));
         preRegistrationToken.setTokenType(TokenType.PRE_REGISTRATION);
         preRegistrationToken.setUsed(false);
-
+        authTokenRepository.save(preRegistrationToken);
         return token;
     }
 
@@ -69,18 +71,19 @@ public class AuthTokenService {
         if (optionalAuthToken.isPresent()) {
             AuthToken authToken = optionalAuthToken.get();
 
-            if (validateToken(authToken, token)) {
+            if (Boolean.TRUE.equals(validateToken(authToken, token))) {
+                invalidateToken(email);
                 return true;
             } else {
                 throw new InvalidAuthTokenException();
             }
+        } else {
+            throw new TokenNotFoundException(email);
         }
-        return false;
     }
 
 
     private Boolean validateToken(AuthToken authToken, String token) {
-
         return authToken.getToken().equals(generateHash(token));
     }
 
@@ -123,7 +126,7 @@ public class AuthTokenService {
         return sb.toString();
     }
 
-    private void invalidateToken(String email) {
+    public void invalidateToken(String email) {
         Optional<AuthToken> optionalAuthToken = authTokenRepository.findValidTokenByEmail(email);
 
         optionalAuthToken.ifPresent(authToken -> {
@@ -131,6 +134,7 @@ public class AuthTokenService {
             authTokenRepository.save(authToken);
         });
     }
+
 }
 
 

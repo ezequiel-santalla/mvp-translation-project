@@ -52,8 +52,8 @@ public class ProjectController {
         user.getProjects().add(project); // Agregar el proyecto al usuario
         userService.updateUser(user);
 
-       // project.setTranslator(user);// Establecer el traductor en el proyecto
-        //projectService.saveProject(project);
+        project.setTranslator(user);// Establecer el traductor en el proyecto
+        projectService.updateProject(project.getId(), project);
 
     }
 

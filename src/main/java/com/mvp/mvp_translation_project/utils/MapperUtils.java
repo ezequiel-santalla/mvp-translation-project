@@ -4,10 +4,7 @@ import com.mvp.mvp_translation_project.models.LanguagePair;
 import com.mvp.mvp_translation_project.models.Project;
 import com.mvp.mvp_translation_project.models.ProjectPayment;
 import com.mvp.mvp_translation_project.models.User;
-import com.mvp.mvp_translation_project.models.dto.ProjectCreationDTO;
-import com.mvp.mvp_translation_project.models.dto.ProjectDto;
-import com.mvp.mvp_translation_project.models.dto.UserDto;
-import com.mvp.mvp_translation_project.models.dto.UserRequestDto;
+import com.mvp.mvp_translation_project.models.dto.*;
 import com.mvp.mvp_translation_project.types.RoleType;
 import com.mvp.mvp_translation_project.types.StatusType;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +62,7 @@ public class MapperUtils {
         projectDto.setFinishedDate(p.getFinishedDate());
         projectDto.setStartingDate(p.getStartingDate());
         projectDto.setTaskType(p.getTaskType());
-        projectDto.setLanguagePair(p.getLanguagePair());
+        projectDto.setLanguagePair(mapToLanguagePairDto(p.getLanguagePair()));
         projectDto.setProjectPayment(p.getProjectPayment());
         projectDto.setStatus(p.getStatus());
 
@@ -89,6 +86,16 @@ public class MapperUtils {
         project.setStatus(StatusType.PENDING);
 
         return project;
+    }
+
+    public static LanguagePairDto mapToLanguagePairDto(LanguagePair languagePair){
+
+        LanguagePairDto languagePairDto = new LanguagePairDto();
+
+        languagePairDto.setSourceLanguage(languagePair.getSourceLanguage().toDto());
+        languagePairDto.setTargetLanguage(languagePair.getTargetLanguage().toDto());
+
+        return languagePairDto;
     }
 
 }

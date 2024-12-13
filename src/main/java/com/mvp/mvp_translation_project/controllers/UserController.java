@@ -5,6 +5,7 @@ import com.mvp.mvp_translation_project.exceptions.InvalidPasswordException;
 import com.mvp.mvp_translation_project.exceptions.UserAlreadyExistsException;
 import com.mvp.mvp_translation_project.models.Address;
 import com.mvp.mvp_translation_project.models.dto.*;
+import com.mvp.mvp_translation_project.services.AuthTokenService;
 import com.mvp.mvp_translation_project.services.EmailService;
 import com.mvp.mvp_translation_project.services.UserService;
 import com.mvp.mvp_translation_project.types.RoleType;
@@ -25,11 +26,13 @@ public class UserController {
 
     private final UserService userService;
     private final EmailService emailService;
+    private final AuthTokenService authTokenService;
 
     @Autowired
-    public UserController(UserService userService, EmailService emailService) {
+    public UserController(UserService userService, EmailService emailService, AuthTokenService authTokenService) {
         this.userService = userService;
         this.emailService = emailService;
+        this.authTokenService = authTokenService;
     }
 
 
@@ -66,6 +69,9 @@ public class UserController {
         // Envía el código al correo electrónico
         emailService.sendSimpleMail(registeredUser.getEmail(), "Welcome to Verbalia, "
                 + registeredUser.getName(), "User  created successfully");
+
+        // Invalida el token que se uso para el registro
+        authTokenService.invalidateToken(registeredUser.getEmail());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
     }

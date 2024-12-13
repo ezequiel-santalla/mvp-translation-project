@@ -20,13 +20,13 @@ public class AuthToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 6)
+    @Column(nullable = false)
     private String token;
 
     @Column(nullable = false, length = 100)
     private String email;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @Column(columnDefinition = "DATETIME")
     private LocalDateTime expiration;
 
     @Column(nullable = false)

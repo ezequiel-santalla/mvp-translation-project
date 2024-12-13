@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(InvalidEmailException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidEmailException(InvalidPasswordException ex) {
+    public ResponseEntity<ErrorResponse> handleInvalidEmailException(InvalidEmailException ex) {
 
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), ex.getMessage());
 
@@ -79,6 +79,14 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(), ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(TokenNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleTokenNotFoundException(TokenNotFoundException ex) {
+
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.getReasonPhrase(), ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
 

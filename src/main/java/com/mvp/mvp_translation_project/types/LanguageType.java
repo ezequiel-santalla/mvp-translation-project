@@ -1,5 +1,7 @@
 package com.mvp.mvp_translation_project.types;
 
+import com.mvp.mvp_translation_project.models.dto.LanguageDto;
+
 public enum LanguageType {
     SPANISH("es", "español", "es"),
     ENGLISH("en", "english", "gb"),
@@ -44,5 +46,9 @@ public enum LanguageType {
 
     public String getFlagCode() {
         return flagCode;
+    }
+
+    public LanguageDto toDto() {
+        return new LanguageDto(this.codeIso, this.name, this.flagCode);
     }
 }

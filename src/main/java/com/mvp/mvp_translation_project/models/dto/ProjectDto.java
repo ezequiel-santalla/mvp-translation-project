@@ -26,7 +26,7 @@ public class ProjectDto {
     private LocalDateTime finishedDate;
     private String filePath;
     private TaskType taskType;
-    private LanguagePair languagePair;
+    private LanguagePairDto languagePair;
     private ProjectPayment projectPayment;
     private StatusType status;
 }
