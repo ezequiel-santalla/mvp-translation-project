@@ -15,14 +15,14 @@ public enum LanguageType {
     HINDI("hi", "हिन्दी", "in"),
     TELUGU("te", "తెలుగు", "in"),
     SWAHILI("sw", "Kiswahili", "ke"),
-    DANISH("da", "dansk", "🇩🇰"),
-    SWEDISH("sv", "svenska", "🇸🇪"),
-    BENGALI("bn", "বাংলা", "🇧🇩"),
-    KAZAKH("kk", "қазақ", "🇰🇿"),
-    LUXEMBOURGISH("lb", "Lëtzebuergesch", "🇱🇺"),
-    INDONESIAN("id", "Bahasa Indonesia", "🇮🇩"),
-    NORWEGIAN("no", "norsk", "🇳🇴"),
-    CATALAN("ca", "català", "🇪🇸");
+    DANISH("da", "dansk", "dk"),
+    SWEDISH("sv", "svenska", "se"),
+    BENGALI("bn", "বাংলা", "bd"),
+    KAZAKH("kk", "қазақ", "kz"),
+    LUXEMBOURGISH("lb", "Lëtzebuergesch", "lu"),
+    INDONESIAN("id", "Bahasa Indonesia", "id"),
+    NORWEGIAN("no", "norsk", "no"),
+    CATALAN("ca", "català", "es");
 
     private final String codeIso;
     private final String name;
