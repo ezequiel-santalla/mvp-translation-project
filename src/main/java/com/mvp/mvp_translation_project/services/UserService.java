@@ -176,6 +176,7 @@ public class UserService {
 
     public UserDto registerUser(UserRequestDto userRequestDto, RoleType roleType) {
         // Mapea el UserRequestDto a una entidad User
+        userRequestDto.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
         User user = MapperUtils.mapRequestToUser(userRequestDto, roleType);
 
         // Verificar si el correo ya existe, incluso si está marcado como eliminado

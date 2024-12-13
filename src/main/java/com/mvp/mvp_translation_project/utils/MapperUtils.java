@@ -17,9 +17,6 @@ import java.time.LocalDateTime;
 
 public class MapperUtils {
 
-    @Autowired
-    private static PasswordEncoder passwordEncoder;
-
     public static UserDto mapToDto(User user) {
 
         UserDto userDto = new UserDto();
@@ -48,7 +45,7 @@ public class MapperUtils {
         user.setBirthDate(userRequestDto.getBirthDate());
         user.setIdentityNumber(userRequestDto.getIdentityNumber());
         user.setCellphone(userRequestDto.getCellphone());
-        user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
+        user.setPassword(userRequestDto.getPassword());
         user.setRole(roleType);
         user.setActive(true); // Activa el usuario por defecto
 
