@@ -1,6 +1,7 @@
 package com.mvp.mvp_translation_project.controllers;
 
 import com.mvp.mvp_translation_project.models.LanguagePair;
+import com.mvp.mvp_translation_project.models.dto.LanguagePairDto;
 import com.mvp.mvp_translation_project.models.dto.UserDto;
 import com.mvp.mvp_translation_project.services.LanguagePairService;
 import jakarta.validation.Valid;
@@ -24,7 +25,7 @@ public class LanguagePairController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LanguagePair>> getAllLanguagePairs() {
+    public ResponseEntity<List<LanguagePairDto>> getAllLanguagePairs() {
         return ResponseEntity.ok(languagePairService.getActiveLanguagePairs());
     }
 

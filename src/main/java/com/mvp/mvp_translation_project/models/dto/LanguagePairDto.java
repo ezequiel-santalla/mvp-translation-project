@@ -11,6 +11,7 @@ import lombok.Setter;
 @Getter @Setter
 public class LanguagePairDto {
 
+    private Long id;
     private LanguageDto sourceLanguage;
     private LanguageDto targetLanguage;
 

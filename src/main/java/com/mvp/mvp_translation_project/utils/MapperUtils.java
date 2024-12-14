@@ -92,6 +92,7 @@ public class MapperUtils {
 
         LanguagePairDto languagePairDto = new LanguagePairDto();
 
+        languagePairDto.setId(languagePair.getId());
         languagePairDto.setSourceLanguage(languagePair.getSourceLanguage().toDto());
         languagePairDto.setTargetLanguage(languagePair.getTargetLanguage().toDto());
 
