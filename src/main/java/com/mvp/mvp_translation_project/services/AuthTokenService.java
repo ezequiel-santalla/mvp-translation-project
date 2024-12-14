@@ -2,6 +2,7 @@ package com.mvp.mvp_translation_project.services;
 
 import com.mvp.mvp_translation_project.exceptions.InvalidAuthTokenException;
 import com.mvp.mvp_translation_project.exceptions.TokenNotFoundException;
+import com.mvp.mvp_translation_project.exceptions.UserAlreadyExistsException;
 import com.mvp.mvp_translation_project.models.AuthToken;
 import com.mvp.mvp_translation_project.repositories.AuthTokenRepository;
 import com.mvp.mvp_translation_project.types.TokenType;
@@ -25,16 +26,19 @@ import java.util.Optional;
 public class AuthTokenService {
 
     private final AuthTokenRepository authTokenRepository;
+    private final UserService userService;
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private static final Integer TOKEN_LENGTH = 6;
 
     @Autowired
-    public AuthTokenService(AuthTokenRepository authTokenRepository) {
+    public AuthTokenService(AuthTokenRepository authTokenRepository, UserService userService) {
         this.authTokenRepository = authTokenRepository;
+        this.userService = userService;
     }
 
     @Transactional
     public String createRecoveryToken(String email) {
+
 
         invalidateToken(email);
         AuthToken recoveryToken = new AuthToken();
@@ -53,6 +57,10 @@ public class AuthTokenService {
 
     public String createPreRegistrationToken(String email) {
 
+        if(userService.existsUserByEmail(email)){
+            throw new UserAlreadyExistsException(email);
+        }
+        invalidateToken(email);
         AuthToken preRegistrationToken = new AuthToken();
         String token = generateToken();
 

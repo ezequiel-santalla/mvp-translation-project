@@ -65,6 +65,9 @@ public class UserService {
                 -> new UserNotFoundException(id));
     }
 
+    public Boolean existsUserByEmail(String email){
+        return userRepository.findUserByEmail(email).isPresent();
+    }
 
     public User createUser(User user) {
         String encryptedPassword = passwordEncoder.encode(user.getPassword());
