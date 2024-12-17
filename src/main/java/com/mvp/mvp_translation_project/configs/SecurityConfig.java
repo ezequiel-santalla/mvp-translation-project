@@ -1,17 +1,13 @@
 package com.mvp.mvp_translation_project.configs;
 
 import com.mvp.mvp_translation_project.services.CustomUserDetailsService;
-import com.mvp.mvp_translation_project.types.RoleType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,7 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-public class WebConfig {
+public class SecurityConfig {
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
@@ -58,20 +54,16 @@ public class WebConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints con acceso basado en roles
                         .requestMatchers("/auth-token/**", "/auth-user/**").permitAll()
-                        .requestMatchers("/admin/**", "/projects/**").hasAnyRole("ADMIN", "ROOT")
-                        .requestMatchers("/user/**").hasAnyRole("TRANSLATOR", "ADMIN", "ROOT")
-                        // Cualquier otra solicitud debe estar autenticada
+                        .requestMatchers("/users/my**").hasAnyRole("TRANSLATOR", "ADMIN", "ROOT")
+                        .requestMatchers("/users/**","/projects/**", "/admin/**").hasAnyRole("ADMIN", "ROOT") // Asegúrate de que esto esté presente
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // Sin estado
-
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {

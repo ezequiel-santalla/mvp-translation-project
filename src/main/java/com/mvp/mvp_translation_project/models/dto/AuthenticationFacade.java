@@ -1,4 +1,4 @@
-package com.mvp.mvp_translation_project.configs;
+package com.mvp.mvp_translation_project.models.dto;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
