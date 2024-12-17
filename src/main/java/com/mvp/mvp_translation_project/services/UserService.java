@@ -85,12 +85,14 @@ public class UserService {
         updateUserFields(user, userUpdateDto);
         User updatedUser = userRepository.save(user);
         return MapperUtils.mapToDto(updatedUser);
-
     }
 
     private void updateUserFields(User user, UserUpdateDto userUpdateDto) {
 
         // Si el campo contiene un dato, lo actualiza
+        if (userUpdateDto.getName() != null) {
+            user.setName(userUpdateDto.getName());
+        }
         if (userUpdateDto.getLastName() != null) {
             user.setLastName(userUpdateDto.getLastName());
         }
