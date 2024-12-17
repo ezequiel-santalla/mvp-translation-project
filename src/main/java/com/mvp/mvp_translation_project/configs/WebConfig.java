@@ -12,9 +12,11 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class WebConfig {
@@ -30,7 +32,7 @@ public class WebConfig {
 
 
 
-
+/*
 //Usar esta version de filterChain para no tener que autenticar ningun endopint
 
     @Bean
@@ -45,26 +47,31 @@ public class WebConfig {
     }
 
 
-/*
+ */
+
+
     //Usar esta version de filterChain para usar autenticacion basada en roles
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints con acceso basado en roles
-                        .requestMatchers("/admin/**", "/projects/**", "/auth-token/**").hasAnyRole("ADMIN", "ROOT")
+                        .requestMatchers("/auth-token/**", "/auth-user/**").permitAll()
+                        .requestMatchers("/admin/**", "/projects/**").hasAnyRole("ADMIN", "ROOT")
                         .requestMatchers("/user/**").hasAnyRole("TRANSLATOR", "ADMIN", "ROOT")
                         // Cualquier otra solicitud debe estar autenticada
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults()); // Autenticación HTTP Basic
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // Sin estado
+
 
         return http.build();
     }
-    */
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {

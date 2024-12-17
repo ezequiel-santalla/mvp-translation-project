@@ -10,7 +10,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-@ToString
 @Getter @Setter
 @Entity
 @Table(name = "language_pairs",
@@ -37,4 +36,10 @@ public class LanguagePair {
 
     @ManyToMany(mappedBy = "languagePairs", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<User> users = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "sourceLanguage = " + sourceLanguage.getCodeIso() +
+                ", targetLanguage = " + targetLanguage.getCodeIso();
+    }
 }

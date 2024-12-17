@@ -1,6 +1,7 @@
 package com.mvp.mvp_translation_project.services;
 
 import com.mvp.mvp_translation_project.exceptions.EmailSendingException;
+import com.mvp.mvp_translation_project.models.Project;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.SimpleMailMessage;
@@ -98,6 +99,36 @@ public class EmailService {
             helper.setText(body, false);
 
             if (attachment != null && attachment.exists() && attachment.isFile()) {
+                helper.addAttachment(StringUtils.cleanPath(attachment.getName()), attachment);
+            }
+
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            throw new EmailSendingException("Failed to send email with attachment", e);
+        }
+    }
+
+    public void sendProjectInvitation(String to, Project project) {
+        File attachment = new File(project.getFilePath());
+        String subject = "Invitation to apply";
+        String applyLink= "'link'";
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true); // 'true' to enable multipart support
+
+            helper.setTo(to);
+            helper.setFrom(getMailDirection());
+            helper.setSubject(subject);
+            String emailContent = "<p>" + project.getName() + "</p>"
+                    + "<p>" + project.getDescription() + "</p>"
+                    + "<p>Language pair: <strong>" + project.getLanguagePair().toString() + "</strong></p>"
+                    + "<p>:Project Payment" + project.getProjectPayment() + "</p>"
+                    + "<p>Task Type:" + project.getTaskType() + "</p>"
+                    + "<p>Deadline:" + project.getDeadline() + "</p>"
+                    +"<p> Click here to apply <a href=\"" + applyLink + "\">" + applyLink + "</a></p>";
+            helper.setText(emailContent, true);
+
+            if (attachment.exists() && attachment.isFile()) {
                 helper.addAttachment(StringUtils.cleanPath(attachment.getName()), attachment);
             }
 

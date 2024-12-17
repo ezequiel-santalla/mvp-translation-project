@@ -30,6 +30,19 @@ public class AuthUserController {
         this.jwtService = jwtService;
     }
 
+    @PostMapping("/login-falso")
+    public ResponseEntity<?> loginFalso(@RequestBody LoginRequest loginRequest) {
+        // Lógica de autenticación
+        String email = loginRequest.email();
+        String password = loginRequest.password();
+        User user = userService.getUserByEmail(loginRequest.email());
+        // Simular autenticación y generar token
+        String token = jwtService.generateJwtToken(email, user.getRole());
+
+        return ResponseEntity.ok(token);
+    }
+
+
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         try {
@@ -42,7 +55,7 @@ public class AuthUserController {
             String jwtToken = jwtService.generateJwtToken(authentication.getName(), user.getRole());
             return ResponseEntity.ok(jwtToken);
         } catch (Exception e) {
-            return ResponseEntity.status(401).body("Invalid credentials");
+            return ResponseEntity.status(401).body("Invalid credentials"+e.getMessage());
         }
     }
 
