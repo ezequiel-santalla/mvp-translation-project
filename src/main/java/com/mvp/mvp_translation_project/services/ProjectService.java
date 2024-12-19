@@ -1,5 +1,6 @@
 package com.mvp.mvp_translation_project.services;
 
+import com.mvp.mvp_translation_project.events.ProjectCreatedEvent;
 import com.mvp.mvp_translation_project.exceptions.DataAccessRuntimeException;
 import com.mvp.mvp_translation_project.models.LanguagePair;
 import com.mvp.mvp_translation_project.models.Project;
@@ -12,6 +13,7 @@ import com.mvp.mvp_translation_project.repositories.ProjectRepository;
 import com.mvp.mvp_translation_project.types.StatusType;
 import com.mvp.mvp_translation_project.utils.MapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -23,11 +25,13 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final LanguagePairRepository languagePairRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepository, LanguagePairRepository languagePairRepository) {
+    public ProjectService(ProjectRepository projectRepository, LanguagePairRepository languagePairRepository, ApplicationEventPublisher eventPublisher) {
         this.projectRepository = projectRepository;
         this.languagePairRepository = languagePairRepository;
+        this.eventPublisher = eventPublisher;
     }
 
 
@@ -74,6 +78,7 @@ public class ProjectService {
             throw new DataAccessRuntimeException("Failed to save the project", e);
         }
 
+        eventPublisher.publishEvent(new ProjectCreatedEvent(project));
         return MapperUtils.mapProjectToDto(project);
     }
 

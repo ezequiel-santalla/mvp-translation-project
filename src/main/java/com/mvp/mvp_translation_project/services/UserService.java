@@ -62,7 +62,7 @@ public class UserService {
                 -> new UserNotFoundException(id));
     }
 
-    public Boolean existsUserByEmail(String email){
+    public Boolean existsUserByEmail(String email) {
         return userRepository.findUserByEmail(email).isPresent();
     }
 
@@ -272,5 +272,9 @@ public class UserService {
                 -> new UserNotFoundException(email));
     }
 
+    public List<User> getUsersByLanguagePair(LanguagePair languagePair) {
+
+        return userRepository.findByLanguagePairsContains(languagePair).orElseThrow();
+    }
 
 }
