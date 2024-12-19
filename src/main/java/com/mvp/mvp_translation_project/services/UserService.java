@@ -2,10 +2,7 @@ package com.mvp.mvp_translation_project.services;
 
 import com.mvp.mvp_translation_project.exceptions.*;
 import com.mvp.mvp_translation_project.models.*;
-import com.mvp.mvp_translation_project.models.dto.ProjectDto;
-import com.mvp.mvp_translation_project.models.dto.UserDto;
-import com.mvp.mvp_translation_project.models.dto.UserRequestDto;
-import com.mvp.mvp_translation_project.models.dto.UserUpdateDto;
+import com.mvp.mvp_translation_project.models.dto.*;
 import com.mvp.mvp_translation_project.repositories.UserRepository;
 import com.mvp.mvp_translation_project.types.RoleType;
 import com.mvp.mvp_translation_project.utils.MapperUtils;
@@ -83,6 +80,17 @@ public class UserService {
                 -> new UserNotFoundException(email));
         // Actualiza los campos del user con los nuevos datos
         updateUserFields(user, userUpdateDto);
+        User updatedUser = userRepository.save(user);
+        return MapperUtils.mapToDto(updatedUser);
+    }
+
+    public UserDto updateUserRole(String email, RoleType role) {
+
+        // Busca el usuario por email o lanza una excepcion si no existe
+        User user = userRepository.findUserByEmail(email).orElseThrow(()
+                -> new UserNotFoundException(email));
+        // Actualiza los campos del user con los nuevos datos
+        user.setRole(role);
         User updatedUser = userRepository.save(user);
         return MapperUtils.mapToDto(updatedUser);
     }
@@ -165,6 +173,14 @@ public class UserService {
         return userRepository.findProjectsByEmail(email)
                 .map(projects -> projects.stream()
                         .map(MapperUtils::mapProjectToDto)
+                        .collect(Collectors.toList()))
+                .orElseThrow(() -> new UserNotFoundException(email));
+    }
+
+    public List<LanguagePairDto> findLanguagesByEmail(String email) {
+        return userRepository.findLanguagePairsByEmail(email)
+                .map(projects -> projects.stream()
+                        .map(MapperUtils::mapToLanguagePairDto)
                         .collect(Collectors.toList()))
                 .orElseThrow(() -> new UserNotFoundException(email));
     }
