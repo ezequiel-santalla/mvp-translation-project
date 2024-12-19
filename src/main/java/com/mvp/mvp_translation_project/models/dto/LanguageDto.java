@@ -11,6 +11,7 @@ import lombok.Setter;
 @Setter
 public class LanguageDto {
 
+    private String value;
     private String codeIso;
     private String name;
     private String flagCode;
