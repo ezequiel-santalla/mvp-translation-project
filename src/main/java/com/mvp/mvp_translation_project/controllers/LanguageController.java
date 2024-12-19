@@ -1,45 +1,55 @@
 package com.mvp.mvp_translation_project.controllers;
 
-import com.mvp.mvp_translation_project.models.LanguagePair;
-import com.mvp.mvp_translation_project.models.dto.LanguagePairDto;
-import com.mvp.mvp_translation_project.models.dto.UserDto;
-import com.mvp.mvp_translation_project.services.LanguagePairService;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import com.mvp.mvp_translation_project.models.dto.LanguageDto;
+import com.mvp.mvp_translation_project.types.LanguageType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
-@RequestMapping("/language-pairs")
-public class LanguagePairController {
+@RequestMapping("/languages")
+@PreAuthorize("hasAnyRole('ADMIN', 'ROOT')")
+public class LanguageController {
 
-    private final LanguagePairService languagePairService;
-
-    @Autowired
-    public LanguagePairController(LanguagePairService languagePairService) {
-        this.languagePairService = languagePairService;
+    @GetMapping("/get-all")
+    public ResponseEntity<List<LanguageDto>> getAllLanguages() {
+        List<LanguageDto> languages = Arrays.stream(LanguageType.values())
+                .map(LanguageType::toDto)
+                .toList();
+        return ResponseEntity.ok(languages);
     }
 
-    @GetMapping
-    public ResponseEntity<List<LanguagePairDto>> getAllLanguagePairs() {
-        return ResponseEntity.ok(languagePairService.getActiveLanguagePairs());
+    @GetMapping("/get-all-names")
+    public ResponseEntity<List<String>> getAllLanguageNames() {
+        List<String> languages = Arrays.stream(LanguageType.values())
+                .map(Enum::name)
+                .toList();
+        return ResponseEntity.ok(languages);
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<LanguagePair> postLanguagePair(@RequestBody @Valid LanguagePair languagePair) {
-        languagePairService.findOrCreateLanguagePair(languagePair);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(languagePair);
+    @GetMapping("/get-filtered-list/{language}")
+    public ResponseEntity<List<LanguageDto>> getFilteredLanguagesList(
+            @PathVariable String language) {
+        List<LanguageDto> languages = Arrays.stream(LanguageType.values())
+                .filter(lang -> !lang.name().equalsIgnoreCase(language))
+                .map(LanguageType::toDto)
+                .toList();
+        return ResponseEntity.ok(languages);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        languagePairService.softDeleteLanguagePair(id);
 
-        return ResponseEntity.noContent().build();
+    @GetMapping("/get-filtered-list-names/{language}")
+    public ResponseEntity<List<String>> getFilteredLanguageNamesList(
+            @PathVariable String language) {
+        List<String> languages = Arrays.stream(LanguageType.values())
+                .map(Enum::name)
+                .filter(name -> !name.equalsIgnoreCase(language))
+                .toList();
+        return ResponseEntity.ok(languages);
     }
+
 }
