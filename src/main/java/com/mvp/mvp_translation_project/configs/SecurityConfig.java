@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = false)
 public class SecurityConfig {
 
     @Autowired
@@ -70,6 +70,7 @@ public class SecurityConfig {
 
     /*
     // esta version del metodo usa las anotaciones @PreAuthorize en cada endpoint
+    //(habilitar @EnableMethodSecurity linea 20)
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
