@@ -4,6 +4,7 @@ import com.mvp.mvp_translation_project.models.User;
 import com.mvp.mvp_translation_project.models.dto.ChangeEmailRequest;
 import com.mvp.mvp_translation_project.models.dto.UserDto;
 import com.mvp.mvp_translation_project.models.dto.UserRequestDto;
+import com.mvp.mvp_translation_project.models.dto.UserUpdateDto;
 import com.mvp.mvp_translation_project.services.EmailService;
 import com.mvp.mvp_translation_project.services.UserService;
 import com.mvp.mvp_translation_project.types.RoleType;
@@ -33,15 +34,15 @@ public class AdminController {
 
 
     @GetMapping("/users/get-all")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ROOT')")
     public ResponseEntity<List<UserDto>> getAllUsers() {
         List<UserDto> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
 
-    @PostMapping("/register")
-    @PreAuthorize("hasRole('ADMIN')") // Solo accesible para usuarios con rol de administrador
+    @PostMapping("/register-admin")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ROOT')")
     public ResponseEntity<UserDto> registerUser(
             @RequestBody @Valid UserRequestDto userRegistrationDTO) {
 
@@ -51,7 +52,7 @@ public class AdminController {
                     + userRegistrationDTO.getEmail() + "' is already registered.");
         }
 
-        UserDto registeredUser = userService.registerUser(userRegistrationDTO, RoleType.TRANSLATOR);
+        UserDto registeredUser = userService.registerUser(userRegistrationDTO, RoleType.ADMIN);
 
         // Envía el código al correo electrónico
         emailService.sendSimpleMail(registeredUser.getEmail(), "Welcome to Verbalia, "
@@ -60,9 +61,19 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
     }
 
+    @PutMapping("/promote-to-admin")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ROOT')")
+    public ResponseEntity<UserDto> toAdmin(
+            @RequestParam String email) {
+
+        UserDto updatedUser = userService.updateUserRole(email, RoleType.ADMIN);
+
+        return ResponseEntity.ok(updatedUser); // 200 OK
+    }
+
 
     @PutMapping("/users/email")
-    @PreAuthorize("hasRole('ADMIN')") // Solo accesible para usuarios con rol de administrador
+    @PreAuthorize("hasAnyRole('ADMIN', 'ROOT')")
     public ResponseEntity<String> changeUserEmail(@RequestBody ChangeEmailRequest request) {
 
         boolean success = userService.changeUserEmail(request.oldEmail(), request.newEmail());
@@ -72,12 +83,6 @@ public class AdminController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update email.");
         }
-    }
-
-    @GetMapping("/users/get-all-no-dto")
-    public ResponseEntity<List<User>> getAllUsersNoDto() {
-        List<User> users = userService.getUsers();
-        return ResponseEntity.ok(users);
     }
 
 }

@@ -49,6 +49,6 @@ public enum LanguageType {
     }
 
     public LanguageDto toDto() {
-        return new LanguageDto(this.codeIso, this.name, this.flagCode);
+        return new LanguageDto(this.name(), this.codeIso, this.name, this.flagCode);
     }
 }

@@ -39,6 +39,7 @@ public class ProjectController {
     // Crear un proyecto
     @PostMapping("/register")
     public ProjectDto postProject(@RequestBody ProjectCreationDTO project) {
+
         return projectService.saveProject(project);
     }
 

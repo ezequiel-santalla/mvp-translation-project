@@ -1,23 +1,24 @@
 package com.mvp.mvp_translation_project.configs;
 
 import com.mvp.mvp_translation_project.services.CustomUserDetailsService;
-import com.mvp.mvp_translation_project.types.RoleType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-public class WebConfig {
+@EnableMethodSecurity(prePostEnabled = false)
+public class SecurityConfig {
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
@@ -45,27 +46,46 @@ public class WebConfig {
     }
 
 
-/*
+
+
+
     //Usar esta version de filterChain para usar autenticacion basada en roles
 
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    /*@Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints con acceso basado en roles
-                        .requestMatchers("/admin/**", "/projects/**", "/auth-token/**").hasAnyRole("ADMIN", "ROOT")
-                        .requestMatchers("/user/**").hasAnyRole("TRANSLATOR", "ADMIN", "ROOT")
-                        // Cualquier otra solicitud debe estar autenticada
+                        .requestMatchers("/auth-token/validate-registration", "/auth-token/generate-recovery-token","/auth-user/**").permitAll()
+                        .requestMatchers("/users/my**").hasAnyRole("TRANSLATOR", "ADMIN", "ROOT")
+                        .requestMatchers("/users/**","/projects/**", "/admin/**").hasAnyRole("ADMIN", "ROOT") // Asegúrate de que esto esté presente
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults()); // Autenticación HTTP Basic
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        return http.build();
+    }*/
+
+    /*
+    // esta version del metodo usa las anotaciones @PreAuthorize en cada endpoint
+    //(habilitar @EnableMethodSecurity linea 20)
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/auth-token/validate-registration", "/auth-token/generate-recovery-token","/auth-user/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
-    */
 
+*/
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();

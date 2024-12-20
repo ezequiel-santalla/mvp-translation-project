@@ -30,6 +30,7 @@ public class AuthUserController {
         this.jwtService = jwtService;
     }
 
+
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         try {
@@ -42,7 +43,7 @@ public class AuthUserController {
             String jwtToken = jwtService.generateJwtToken(authentication.getName(), user.getRole());
             return ResponseEntity.ok(jwtToken);
         } catch (Exception e) {
-            return ResponseEntity.status(401).body("Invalid credentials");
+            return ResponseEntity.status(401).body("Invalid credentials"+e.getMessage());
         }
     }
 
