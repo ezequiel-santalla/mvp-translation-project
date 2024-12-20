@@ -35,7 +35,6 @@ public class UserController {
         this.authTokenService = authTokenService;
     }
 
-
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUsers() {
         List<UserDto> users = userService.getActiveUsers();
@@ -55,6 +54,13 @@ public class UserController {
         return ResponseEntity.ok(userDto); // 200 OK
     }
 
+    @PutMapping("/update/{email}")
+    public ResponseEntity<UserDto> updateUserByEmail(
+            @PathVariable String email,
+            @RequestBody @Valid UserUpdateDto userUpdateDto) {
+        UserDto updatedUser = userService.updateUserByDto(email, userUpdateDto);
+        return ResponseEntity.ok(updatedUser);
+    }
 
     @PostMapping("/register")
     public ResponseEntity<UserDto> registerUser(@RequestBody @Valid UserRequestDto userRegistrationDTO) {
@@ -85,18 +91,6 @@ public class UserController {
 
         return ResponseEntity.noContent().build(); // 204 No Content
     }
-
-
-    @PutMapping("/update")
-    public ResponseEntity<UserDto> updateUserByEmail(
-            @RequestParam String email,
-            @RequestBody @Valid UserUpdateDto userUpdateDto) {
-
-        UserDto updatedUser = userService.updateUserByDto(email, userUpdateDto);
-
-        return ResponseEntity.ok(updatedUser); // 200 OK
-    }
-
 
     @PatchMapping("/change-password")
     public ResponseEntity<String> changePassword(
