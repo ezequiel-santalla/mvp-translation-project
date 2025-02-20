@@ -1,6 +1,7 @@
 package com.mvp.mvp_translation_project.services;
 
 import com.mvp.mvp_translation_project.exceptions.DataAccessRuntimeException;
+import com.mvp.mvp_translation_project.exceptions.ProjectNotFoundException;
 import com.mvp.mvp_translation_project.models.LanguagePair;
 import com.mvp.mvp_translation_project.models.Project;
 import com.mvp.mvp_translation_project.models.User;
@@ -17,19 +18,21 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final LanguagePairRepository languagePairRepository;
+    private final UserService userService;
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepository, LanguagePairRepository languagePairRepository) {
+    public ProjectService(ProjectRepository projectRepository, LanguagePairRepository languagePairRepository, UserService userService) {
         this.projectRepository = projectRepository;
         this.languagePairRepository = languagePairRepository;
+        this.userService = userService;
     }
-
 
     // Buscar o crear un LanguagePair único
     private LanguagePair findOrCreateLanguagePair(LanguagePair inputPair) {
@@ -77,6 +80,17 @@ public class ProjectService {
         return MapperUtils.mapProjectToDto(project);
     }
 
+    public void addUserToProject(String userEmail, Long idProject) {
+        User user = userService.getUserByEmail(userEmail);
+        Project project = projectRepository.findById(idProject).orElseThrow(() -> new ProjectNotFoundException(idProject));
+
+        user.getProjects().add(project); // Agregar el proyecto al usuario
+        userService.updateUser(user);
+
+        project.setTranslator(user);// Establecer el traductor en el proyecto
+        updateProject(project.getId(), project);
+    }
+
     // Otros métodos de búsqueda y CRUD
     public List<ProjectDto> findProjects() {
         try {
@@ -93,10 +107,8 @@ public class ProjectService {
         if (existingProject != null) {
             existingProject.setName(p.getName());
             existingProject.setDescription(p.getDescription());
-            existingProject.setStartingDate(p.getStartingDate());
             existingProject.setDeadline(p.getDeadline());
             existingProject.setFinishedDate(p.getFinishedDate());
-            existingProject.setStatus(p.getStatus());
             existingProject.setFilePath(p.getFilePath());
             existingProject.setTranslator(p.getTranslator());
             existingProject.setLanguagePair(findOrCreateLanguagePair(p.getLanguagePair()));
@@ -118,9 +130,9 @@ public class ProjectService {
         }
     }
 
-    public Project findProjectById(Long id) {
+    public ProjectDto findProjectById(Long id) {
         try {
-            return projectRepository.findById(id).orElse(null);
+            return MapperUtils.mapProjectToDto(Objects.requireNonNull(projectRepository.findById(id).orElse(null)));
         } catch (DataAccessException e) {
             throw new DataAccessRuntimeException("Failed to find the project", e);
         }
@@ -135,8 +147,6 @@ public class ProjectService {
     }
 
     // Métodos adicionales para búsquedas específicas...
-
-
     public List<Project> findProjectsStartingAfter(LocalDateTime startingDate) {
         return projectRepository.findByStartingDateAfter(startingDate);
     }

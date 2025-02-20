@@ -22,12 +22,12 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
-    private final UserService userService;
+    //private final UserService userService;
 
     @Autowired
     public ProjectController(ProjectService projectService, UserService userService) {
         this.projectService = projectService;
-        this.userService = userService;
+        //this.userService = userService;
     }
 
     // Obtener todos los proyectos
@@ -43,12 +43,12 @@ public class ProjectController {
         return projectService.saveProject(project);
     }
 
-    @PatchMapping("/add-user")
+    /*@PatchMapping("/add-user")
     public void addUserToProject (
             @RequestParam String userEmail, Long idProject) {
 
-        User user = userService.getUserByEmail(userEmail);
-        Project project = projectService.findProjectById(idProject);
+        //User user = userService.getUserByEmail(userEmail);
+        ProjectDto project = projectService.findProjectById(idProject);
 
         user.getProjects().add(project); // Agregar el proyecto al usuario
         userService.updateUser(user);
@@ -56,7 +56,7 @@ public class ProjectController {
         project.setTranslator(user);// Establecer el traductor en el proyecto
         projectService.updateProject(project.getId(), project);
 
-    }
+    }*/
 
     // Actualizar un proyecto dado su ID
     @PutMapping("/update")
@@ -72,7 +72,7 @@ public class ProjectController {
 
     // Obtener un proyecto por ID
     @GetMapping("/{id}")
-    public Project getProjectById(@PathVariable Long id) {
+    public ProjectDto getProjectById(@PathVariable Long id) {
         return projectService.findProjectById(id);
     }
 
