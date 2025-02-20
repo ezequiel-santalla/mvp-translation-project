@@ -7,10 +7,12 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.util.List;
 
 @Service
 public class EmailService {
@@ -108,31 +110,33 @@ public class EmailService {
         }
     }
 
-    public void sendProjectInvitation(String to, Project project) {
+    @Async
+    public void sendProjectInvitation(List<String> translatorsEmails, Project project) {
         File attachment = new File(project.getFilePath());
         String subject = "Invitation to apply";
-        String applyLink= "'link'";
+        String applyLink = "'link'";
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true); // 'true' to enable multipart support
+            for (String email : translatorsEmails) {
+                helper.setTo(email);
+                helper.setFrom(getMailDirection());
+                helper.setSubject(subject);
+                String emailContent = "<p>" + project.getName() + "</p>"
+                        + "<p>" + project.getDescription() + "</p>"
+                        + "<p>Language pair: <strong>" + project.getLanguagePair().toString() + "</strong></p>"
+                        + "<p>:Project Payment" + project.getProjectPayment() + "</p>"
+                        + "<p>Task Type:" + project.getTaskType() + "</p>"
+                        + "<p>Deadline:" + project.getDeadline() + "</p>"
+                        + "<p> Click here to apply <a href=\"" + applyLink + "\">" + applyLink + "</a></p>";
+                helper.setText(emailContent, true);
 
-            helper.setTo(to);
-            helper.setFrom(getMailDirection());
-            helper.setSubject(subject);
-            String emailContent = "<p>" + project.getName() + "</p>"
-                    + "<p>" + project.getDescription() + "</p>"
-                    + "<p>Language pair: <strong>" + project.getLanguagePair().toString() + "</strong></p>"
-                    + "<p>:Project Payment" + project.getProjectPayment() + "</p>"
-                    + "<p>Task Type:" + project.getTaskType() + "</p>"
-                    + "<p>Deadline:" + project.getDeadline() + "</p>"
-                    +"<p> Click here to apply <a href=\"" + applyLink + "\">" + applyLink + "</a></p>";
-            helper.setText(emailContent, true);
+                if (attachment.exists() && attachment.isFile()) {
+                    helper.addAttachment(StringUtils.cleanPath(attachment.getName()), attachment);
+                }
 
-            if (attachment.exists() && attachment.isFile()) {
-                helper.addAttachment(StringUtils.cleanPath(attachment.getName()), attachment);
+                mailSender.send(message);
             }
-
-            mailSender.send(message);
         } catch (MessagingException e) {
             throw new EmailSendingException("Failed to send email with attachment", e);
         }
@@ -140,6 +144,18 @@ public class EmailService {
 
     public String getMailDirection() {
         return "translator.app.test@gmail.com";
+    }
+
+    @Async
+    public void sendEmailToTranslators(List<String> translatorsEmails, String subject, String body) {
+        for (String email : translatorsEmails) {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(email);
+            message.setFrom(getMailDirection());
+            message.setSubject(subject);
+            message.setText(body);
+            mailSender.send(message);
+        }
     }
 }
 

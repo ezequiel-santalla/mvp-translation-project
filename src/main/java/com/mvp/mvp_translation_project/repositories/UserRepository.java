@@ -36,5 +36,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u.languagePairs FROM User u WHERE u.email = :email")
     Optional<List<LanguagePair>> findLanguagePairsByEmail(String email);
+
+    Optional<List<User>> findByLanguagePairsContains(LanguagePair languagePair);
 }
 
