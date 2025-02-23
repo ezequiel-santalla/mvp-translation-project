@@ -11,6 +11,8 @@ import com.mvp.mvp_translation_project.services.UserService;
 import com.mvp.mvp_translation_project.types.LanguageType;
 import com.mvp.mvp_translation_project.types.StatusType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -150,4 +152,24 @@ public class ProjectController {
         return projectService.findProjectsByFinishedDate(finishedDate);
     }
 
+
+    @PatchMapping("/change-status")
+    @PreAuthorize("hasAnyRole('TRANSLATOR', 'ADMIN', 'ROOT')")
+
+    public ResponseEntity<ProjectDto> finishProject(
+            @RequestParam Long id,
+            @RequestParam StatusType status){
+        System.out.println(id);
+        ProjectDto projectDto = projectService.changeStatus(id, status);
+        return ResponseEntity.ok(projectDto);
+    }
+
+    @PatchMapping("/assign-translator")
+    public ResponseEntity<ProjectDto> assignTranslator(
+            @RequestParam Long idProject,
+            @RequestParam String translatorEmail){
+        ProjectDto projectDto = projectService.addUserToProject(translatorEmail, idProject);
+
+        return ResponseEntity.ok(projectDto);
+    }
 }

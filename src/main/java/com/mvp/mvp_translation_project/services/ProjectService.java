@@ -7,7 +7,6 @@ import com.mvp.mvp_translation_project.models.Project;
 import com.mvp.mvp_translation_project.models.User;
 import com.mvp.mvp_translation_project.models.dto.ProjectCreationDTO;
 import com.mvp.mvp_translation_project.models.dto.ProjectDto;
-import com.mvp.mvp_translation_project.models.dto.UserDto;
 import com.mvp.mvp_translation_project.repositories.LanguagePairRepository;
 import com.mvp.mvp_translation_project.repositories.ProjectRepository;
 import com.mvp.mvp_translation_project.types.StatusType;
@@ -80,15 +79,15 @@ public class ProjectService {
         return MapperUtils.mapProjectToDto(project);
     }
 
-    public void addUserToProject(String userEmail, Long idProject) {
+    public ProjectDto addUserToProject(String userEmail, Long idProject) {
         User user = userService.getUserByEmail(userEmail);
-        Project project = projectRepository.findById(idProject).orElseThrow(() -> new ProjectNotFoundException(idProject));
-
-        user.getProjects().add(project); // Agregar el proyecto al usuario
-        userService.updateUser(user);
+        Project project = projectRepository.findById(idProject).orElseThrow(()
+                -> new ProjectNotFoundException(idProject));
 
         project.setTranslator(user);// Establecer el traductor en el proyecto
+        project.setStatus(StatusType.ASSIGNED);
         updateProject(project.getId(), project);
+        return MapperUtils.mapProjectToDto(project);
     }
 
     // Otros métodos de búsqueda y CRUD
@@ -121,6 +120,24 @@ public class ProjectService {
         }
         return null;
     }
+
+
+    public ProjectDto changeStatus(Long id, StatusType statusType) {
+        Project existingProject = projectRepository.findById(id).orElse(null);
+
+        if (existingProject != null) {
+            existingProject.setStatus(statusType);
+
+            try {
+                Project project = projectRepository.save(existingProject);
+                return MapperUtils.mapProjectToDto(project);
+            } catch (DataAccessException e) {
+                throw new DataAccessRuntimeException("Failed to update the project", e);
+            }
+        }
+        return null;
+    }
+
 
     public void deleteProject(Long id) {
         try {
