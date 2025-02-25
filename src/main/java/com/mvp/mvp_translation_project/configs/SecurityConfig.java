@@ -94,7 +94,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
                     config.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // Permitir tu origen frontend
-                    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Permitir métodos HTTP
+                    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")); // Permitir métodos HTTP
                     config.setAllowedHeaders(Arrays.asList("*")); // Permitir todos los encabezados
                     config.setAllowCredentials(true); // Permitir credenciales si es necesario
                     return config;

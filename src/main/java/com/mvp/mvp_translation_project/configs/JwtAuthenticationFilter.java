@@ -2,6 +2,7 @@ package com.mvp.mvp_translation_project.configs;
 
 import com.mvp.mvp_translation_project.services.CustomUserDetailsService;
 import com.mvp.mvp_translation_project.services.JWTService;
+import com.mvp.mvp_translation_project.services.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,10 +21,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
+    private final TokenService tokenService;
 
-    public JwtAuthenticationFilter(JWTService jwtUtil, CustomUserDetailsService customUserDetailsService) {
+    public JwtAuthenticationFilter(JWTService jwtUtil, CustomUserDetailsService customUserDetailsService, TokenService tokenService) {
         this.jwtService = jwtUtil;
         this.customUserDetailsService = customUserDetailsService;
+        this.tokenService = tokenService;
     }
 
     @Override
@@ -35,6 +38,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
+
+            if (tokenService.isTokenRevoked(token)) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Token revoked. Please log in again.");
+                return;
+            }
+
             try {
                 String email = jwtService.getUsernameFromToken(token);
                 if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {

@@ -152,14 +152,21 @@ public class ProjectController {
         return projectService.findProjectsByFinishedDate(finishedDate);
     }
 
+    @PatchMapping("/finish")
+    @PreAuthorize("hasAnyRole('TRANSLATOR', 'ADMIN', 'ROOT')")
+
+    public ResponseEntity<ProjectDto> finishProject(
+            @RequestParam Long id){
+        ProjectDto projectDto = projectService.finishProject(id);
+        return ResponseEntity.ok(projectDto);
+    }
 
     @PatchMapping("/change-status")
     @PreAuthorize("hasAnyRole('TRANSLATOR', 'ADMIN', 'ROOT')")
 
-    public ResponseEntity<ProjectDto> finishProject(
+    public ResponseEntity<ProjectDto> changeStatus(
             @RequestParam Long id,
             @RequestParam StatusType status){
-        System.out.println(id);
         ProjectDto projectDto = projectService.changeStatus(id, status);
         return ResponseEntity.ok(projectDto);
     }

@@ -122,6 +122,23 @@ public class ProjectService {
     }
 
 
+    public ProjectDto finishProject (Long id) {
+        Project existingProject = projectRepository.findById(id).orElse(null);
+
+        if (existingProject != null) {
+            existingProject.setStatus(StatusType.FINISHED);
+            existingProject.setFinishedDate(LocalDateTime.now());
+            try {
+                Project project = projectRepository.save(existingProject);
+                return MapperUtils.mapProjectToDto(project);
+            } catch (DataAccessException e) {
+                throw new DataAccessRuntimeException("Failed to update the project", e);
+            }
+        }
+        return null;
+    }
+
+
     public ProjectDto changeStatus(Long id, StatusType statusType) {
         Project existingProject = projectRepository.findById(id).orElse(null);
 

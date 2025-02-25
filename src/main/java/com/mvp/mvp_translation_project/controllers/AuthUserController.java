@@ -3,6 +3,7 @@ package com.mvp.mvp_translation_project.controllers;
 import com.mvp.mvp_translation_project.models.User;
 import com.mvp.mvp_translation_project.models.dto.LoginRequest;
 import com.mvp.mvp_translation_project.services.JWTService;
+import com.mvp.mvp_translation_project.services.TokenService;
 import com.mvp.mvp_translation_project.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +22,14 @@ public class AuthUserController {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final JWTService jwtService;
+    private final TokenService tokenService;
 
     @Autowired
-    public AuthUserController(AuthenticationManager authenticationManager, UserService userService, JWTService jwtService) {
+    public AuthUserController(AuthenticationManager authenticationManager, UserService userService, JWTService jwtService, TokenService tokenService) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.jwtService = jwtService;
+        this.tokenService = tokenService;
     }
 
 
@@ -47,4 +50,15 @@ public class AuthUserController {
     }
 
 
-}
+        @PostMapping("/logout")
+        public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.badRequest().body("No valid token provided.");
+            }
+
+            String token = authHeader.substring(7);
+            tokenService.revokeToken(token);
+
+            return ResponseEntity.ok("Logout successful. Token revoked.");
+        }
+    }
