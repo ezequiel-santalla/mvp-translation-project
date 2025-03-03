@@ -5,10 +5,11 @@ import com.mvp.mvp_translation_project.exceptions.InvalidPasswordException;
 import com.mvp.mvp_translation_project.exceptions.UserAlreadyExistsException;
 import com.mvp.mvp_translation_project.models.Address;
 import com.mvp.mvp_translation_project.models.dto.*;
-import com.mvp.mvp_translation_project.services.AuthTokenService;
+import com.mvp.mvp_translation_project.services.AuthCodeService;
 import com.mvp.mvp_translation_project.services.EmailService;
 import com.mvp.mvp_translation_project.services.UserService;
 import com.mvp.mvp_translation_project.types.RoleType;
+import com.mvp.mvp_translation_project.types.AuthCodeType;
 import com.mvp.mvp_translation_project.utils.Utils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +27,10 @@ public class UserAdminController {
 
     private final UserService userService;
     private final EmailService emailService;
-    private final AuthTokenService authTokenService;
+    private final AuthCodeService authTokenService;
 
     @Autowired
-    public UserAdminController(UserService userService, EmailService emailService, AuthTokenService authTokenService) {
+    public UserAdminController(UserService userService, EmailService emailService, AuthCodeService authTokenService) {
         this.userService = userService;
         this.emailService = emailService;
         this.authTokenService = authTokenService;
@@ -67,14 +68,14 @@ public class UserAdminController {
                     + userRegistrationDTO.getEmail() + "' is already registered.");
         }
 
-        UserDto registeredUser = userService.registerUser(userRegistrationDTO, RoleType.TRANSLATOR);
+        UserDto registeredUser = userService.registerUser(userRegistrationDTO, RoleType.ROLE_TRANSLATOR);
 
         // Envía el código al correo electrónico
         emailService.sendSimpleMail(registeredUser.getEmail(), "Welcome to Verbalia, "
                 + registeredUser.getName(), "User  created successfully");
 
         // Invalida el token que se uso para el registro
-        authTokenService.invalidateToken(registeredUser.getEmail());
+        authTokenService.invalidateCode(registeredUser.getEmail(), AuthCodeType.PRE_REGISTRATION);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
     }

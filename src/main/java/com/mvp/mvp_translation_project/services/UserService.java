@@ -150,6 +150,17 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void hardResetPassword(String email, String newPassword) {
+
+        User user = userRepository.findUserByEmail(email).orElseThrow(UserNotFoundException::new);
+
+        // Hash de la nueva contraseña
+        String hashedNewPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(hashedNewPassword);
+        userRepository.save(user);
+    }
+
+
 
     public void deleteUser(Long id) {
 
@@ -276,5 +287,7 @@ public class UserService {
 
         return userRepository.findByLanguagePairsContains(languagePair).orElseThrow();
     }
+
+
 
 }

@@ -2,8 +2,8 @@ package com.mvp.mvp_translation_project.types;
 
 public enum RoleType {
 
-    TRANSLATOR,
-    ADMIN,
-    SUPER_ADMIN,
-    ROOT
+    ROLE_TRANSLATOR,
+    ROLE_ADMIN,
+    ROLE_SUPER_ADMIN,
+    ROLE_ROOT
 }

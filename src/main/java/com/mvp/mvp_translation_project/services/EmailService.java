@@ -32,6 +32,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    @Async
     public void sendSimpleMail(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
@@ -42,6 +43,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    @Async
     public void sendPreRegisterEmail(String toEmail, String preRegisterToken) {
         MimeMessage message = mailSender.createMimeMessage();
         try {
@@ -59,6 +61,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    @Async
     public void sendRecoveryEmail(String toEmail, String recoveryToken) {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = null;
@@ -80,6 +83,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    @Async
     public void sendVerificationEmail(String toEmail, String verificationCode) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, false, ENCODING);
@@ -90,6 +94,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    @Async
     public void sendEmailWithAttachment(String to, String subject, String body, File attachment) {
         try {
             MimeMessage message = mailSender.createMimeMessage();

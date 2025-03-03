@@ -39,6 +39,7 @@ public class UserProfileController {
     @PreAuthorize("hasAnyRole('TRANSLATOR', 'ADMIN', 'ROOT')")
     public ResponseEntity<UserDto> getUser() {
         String email = authenticationFacade.getAuthenticatedUserEmail();
+        System.out.println("email"+email);
         UserDto userDto = userService.findUserByEmail(email);
         return ResponseEntity.ok(userDto); // 200 OK
     }

@@ -82,8 +82,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    @ExceptionHandler(TokenNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleTokenNotFoundException(TokenNotFoundException ex) {
+    @ExceptionHandler(AuthTokenNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleTokenNotFoundException(AuthTokenNotFoundException ex) {
 
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.getReasonPhrase(), ex.getMessage());
 

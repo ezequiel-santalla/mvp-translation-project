@@ -1,10 +1,8 @@
 package com.mvp.mvp_translation_project.controllers;
 import com.mvp.mvp_translation_project.exceptions.UserAlreadyExistsException;
-import com.mvp.mvp_translation_project.models.User;
 import com.mvp.mvp_translation_project.models.dto.ChangeEmailRequest;
 import com.mvp.mvp_translation_project.models.dto.UserDto;
 import com.mvp.mvp_translation_project.models.dto.UserRequestDto;
-import com.mvp.mvp_translation_project.models.dto.UserUpdateDto;
 import com.mvp.mvp_translation_project.services.EmailService;
 import com.mvp.mvp_translation_project.services.UserService;
 import com.mvp.mvp_translation_project.types.RoleType;
@@ -52,7 +50,7 @@ public class AdminController {
                     + userRegistrationDTO.getEmail() + "' is already registered.");
         }
 
-        UserDto registeredUser = userService.registerUser(userRegistrationDTO, RoleType.ADMIN);
+        UserDto registeredUser = userService.registerUser(userRegistrationDTO, RoleType.ROLE_ADMIN);
 
         // Envía el código al correo electrónico
         emailService.sendSimpleMail(registeredUser.getEmail(), "Welcome to Verbalia, "
@@ -66,7 +64,7 @@ public class AdminController {
     public ResponseEntity<UserDto> toAdmin(
             @RequestParam String email) {
 
-        UserDto updatedUser = userService.updateUserRole(email, RoleType.ADMIN);
+        UserDto updatedUser = userService.updateUserRole(email, RoleType.ROLE_ADMIN);
 
         return ResponseEntity.ok(updatedUser); // 200 OK
     }
