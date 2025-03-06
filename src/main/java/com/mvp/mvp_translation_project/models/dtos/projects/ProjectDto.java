@@ -1,13 +1,12 @@
-package com.mvp.mvp_translation_project.models.dto;
+package com.mvp.mvp_translation_project.models.dtos.projects;
 
-import com.mvp.mvp_translation_project.models.LanguagePair;
 import com.mvp.mvp_translation_project.models.ProjectPayment;
-import com.mvp.mvp_translation_project.types.PaymentType;
+import com.mvp.mvp_translation_project.models.dtos.languages.LanguagePairDto;
+import com.mvp.mvp_translation_project.models.dtos.users.UserDto;
 import com.mvp.mvp_translation_project.types.StatusType;
 import com.mvp.mvp_translation_project.types.TaskType;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor

@@ -1,14 +1,11 @@
 package com.mvp.mvp_translation_project.controllers;
 
-import com.mvp.mvp_translation_project.exceptions.InvalidAuthTokenException;
-import com.mvp.mvp_translation_project.exceptions.InvalidEmailException;
 import com.mvp.mvp_translation_project.models.User;
-import com.mvp.mvp_translation_project.models.dto.LoginRequest;
-import com.mvp.mvp_translation_project.models.dto.ResetPasswordRequest;
-import com.mvp.mvp_translation_project.models.dto.ValidateRegistrationRequest;
+import com.mvp.mvp_translation_project.models.dtos.auth.LoginRequest;
+import com.mvp.mvp_translation_project.models.dtos.auth.ResetPasswordRequest;
+import com.mvp.mvp_translation_project.models.dtos.auth.ValidateRegistrationRequest;
 import com.mvp.mvp_translation_project.services.*;
 import com.mvp.mvp_translation_project.types.AuthCodeType;
-import com.mvp.mvp_translation_project.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

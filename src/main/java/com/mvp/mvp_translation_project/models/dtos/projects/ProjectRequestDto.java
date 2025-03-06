@@ -1,12 +1,10 @@
-package com.mvp.mvp_translation_project.models.dto;
+package com.mvp.mvp_translation_project.models.dtos.projects;
 
 import com.mvp.mvp_translation_project.models.LanguagePair;
 import com.mvp.mvp_translation_project.models.ProjectPayment;
-import com.mvp.mvp_translation_project.types.PaymentType;
 import com.mvp.mvp_translation_project.types.TaskType;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -15,7 +13,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode
 @ToString
 
-public class ProjectCreationDTO {
+public class ProjectRequestDto {
 
     private String name;
     private String description;

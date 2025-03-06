@@ -2,7 +2,11 @@ package com.mvp.mvp_translation_project.services;
 
 import com.mvp.mvp_translation_project.exceptions.*;
 import com.mvp.mvp_translation_project.models.*;
-import com.mvp.mvp_translation_project.models.dto.*;
+import com.mvp.mvp_translation_project.models.dtos.languages.LanguagePairDto;
+import com.mvp.mvp_translation_project.models.dtos.projects.ProjectDto;
+import com.mvp.mvp_translation_project.models.dtos.users.UserDto;
+import com.mvp.mvp_translation_project.models.dtos.users.UserRequestDto;
+import com.mvp.mvp_translation_project.models.dtos.users.UserUpdateDto;
 import com.mvp.mvp_translation_project.repositories.UserRepository;
 import com.mvp.mvp_translation_project.types.RoleType;
 import com.mvp.mvp_translation_project.utils.MapperUtils;

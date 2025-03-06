@@ -1,4 +1,4 @@
-package com.mvp.mvp_translation_project.models.dto;
+package com.mvp.mvp_translation_project.models.dtos.auth;
 
 
 

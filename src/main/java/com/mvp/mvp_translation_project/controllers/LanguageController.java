@@ -1,6 +1,6 @@
 package com.mvp.mvp_translation_project.controllers;
 
-import com.mvp.mvp_translation_project.models.dto.LanguageDto;
+import com.mvp.mvp_translation_project.models.dtos.languages.LanguageDto;
 import com.mvp.mvp_translation_project.types.LanguageType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

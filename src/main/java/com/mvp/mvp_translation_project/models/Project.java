@@ -50,7 +50,7 @@ public class Project {
     private TaskType taskType;
 
     // Relación con ProjectPayment
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_payment", referencedColumnName = "id")
     private ProjectPayment projectPayment;
 
@@ -60,7 +60,7 @@ public class Project {
     private User translator;
 
     // Relación con LanguagePair (Solo un par de idiomas por proyecto)
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "id_language_pair", nullable = false)
     private LanguagePair languagePair;
 }

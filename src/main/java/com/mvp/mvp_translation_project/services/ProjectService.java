@@ -5,8 +5,8 @@ import com.mvp.mvp_translation_project.exceptions.ProjectNotFoundException;
 import com.mvp.mvp_translation_project.models.LanguagePair;
 import com.mvp.mvp_translation_project.models.Project;
 import com.mvp.mvp_translation_project.models.User;
-import com.mvp.mvp_translation_project.models.dto.ProjectCreationDTO;
-import com.mvp.mvp_translation_project.models.dto.ProjectDto;
+import com.mvp.mvp_translation_project.models.dtos.projects.ProjectRequestDto;
+import com.mvp.mvp_translation_project.models.dtos.projects.ProjectDto;
 import com.mvp.mvp_translation_project.repositories.LanguagePairRepository;
 import com.mvp.mvp_translation_project.repositories.ProjectRepository;
 import com.mvp.mvp_translation_project.types.StatusType;
@@ -52,7 +52,7 @@ public class ProjectService {
     }
 
     // Validar los datos del proyecto antes de guardarlo
-    private void validateProject(ProjectCreationDTO dto) {
+    private void validateProject(ProjectRequestDto dto) {
         if (dto.getName() == null || dto.getName().isEmpty()) {
             throw new IllegalArgumentException("Project name is required.");
         }
@@ -65,10 +65,10 @@ public class ProjectService {
     }
 
     // Crear un nuevo proyecto
-    public ProjectDto saveProject(ProjectCreationDTO projectCreationDTO) {
-        validateProject(projectCreationDTO);
-        projectCreationDTO.setLanguagePair(findOrCreateLanguagePair(projectCreationDTO.getLanguagePair()));
-        Project project = MapperUtils.mapToProject(projectCreationDTO);
+    public ProjectDto saveProject(ProjectRequestDto projectRequestDto) {
+        validateProject(projectRequestDto);
+        projectRequestDto.setLanguagePair(findOrCreateLanguagePair(projectRequestDto.getLanguagePair()));
+        Project project = MapperUtils.mapToProject(projectRequestDto);
 
         try {
             projectRepository.save(project);

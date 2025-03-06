@@ -2,13 +2,10 @@ package com.mvp.mvp_translation_project.controllers;
 
 import com.mvp.mvp_translation_project.models.LanguagePair;
 import com.mvp.mvp_translation_project.models.Project;
-import com.mvp.mvp_translation_project.models.User;
-import com.mvp.mvp_translation_project.models.dto.ProjectCreationDTO;
-import com.mvp.mvp_translation_project.models.dto.ProjectDto;
-import com.mvp.mvp_translation_project.models.dto.UserDto;
+import com.mvp.mvp_translation_project.models.dtos.projects.ProjectRequestDto;
+import com.mvp.mvp_translation_project.models.dtos.projects.ProjectDto;
 import com.mvp.mvp_translation_project.services.ProjectService;
 import com.mvp.mvp_translation_project.services.UserService;
-import com.mvp.mvp_translation_project.types.LanguageType;
 import com.mvp.mvp_translation_project.types.StatusType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +37,7 @@ public class ProjectController {
 
     // Crear un proyecto
     @PostMapping("/register")
-    public ProjectDto postProject(@RequestBody ProjectCreationDTO project) {
+    public ProjectDto postProject(@RequestBody ProjectRequestDto project) {
 
         return projectService.saveProject(project);
     }

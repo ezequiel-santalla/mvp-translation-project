@@ -1,5 +1,8 @@
 package com.mvp.mvp_translation_project.types;
 
+import lombok.Getter;
+
+@Getter
 public enum TaskType {
     TRANSLATION("Translation"),
     REVISION("Revision"),
@@ -17,8 +20,5 @@ public enum TaskType {
         this.description = description;
     }
 
-    public String getDescription() {
-        return description;
-    }
 }
 

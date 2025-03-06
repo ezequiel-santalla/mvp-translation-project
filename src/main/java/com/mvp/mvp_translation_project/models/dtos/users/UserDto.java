@@ -1,4 +1,4 @@
-package com.mvp.mvp_translation_project.models.dto;
+package com.mvp.mvp_translation_project.models.dtos.users;
 
 import com.mvp.mvp_translation_project.types.RoleType;
 import lombok.AllArgsConstructor;

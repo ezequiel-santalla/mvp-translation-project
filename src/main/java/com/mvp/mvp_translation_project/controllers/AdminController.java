@@ -1,8 +1,8 @@
 package com.mvp.mvp_translation_project.controllers;
 import com.mvp.mvp_translation_project.exceptions.UserAlreadyExistsException;
-import com.mvp.mvp_translation_project.models.dto.ChangeEmailRequest;
-import com.mvp.mvp_translation_project.models.dto.UserDto;
-import com.mvp.mvp_translation_project.models.dto.UserRequestDto;
+import com.mvp.mvp_translation_project.models.dtos.users.ChangeEmailRequest;
+import com.mvp.mvp_translation_project.models.dtos.users.UserDto;
+import com.mvp.mvp_translation_project.models.dtos.users.UserRequestDto;
 import com.mvp.mvp_translation_project.services.EmailService;
 import com.mvp.mvp_translation_project.services.UserService;
 import com.mvp.mvp_translation_project.types.RoleType;

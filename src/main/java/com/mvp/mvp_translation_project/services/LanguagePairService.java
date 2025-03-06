@@ -2,7 +2,7 @@ package com.mvp.mvp_translation_project.services;
 
 import com.mvp.mvp_translation_project.exceptions.DataAccessRuntimeException;
 import com.mvp.mvp_translation_project.models.LanguagePair;
-import com.mvp.mvp_translation_project.models.dto.LanguagePairDto;
+import com.mvp.mvp_translation_project.models.dtos.languages.LanguagePairDto;
 import com.mvp.mvp_translation_project.repositories.LanguagePairRepository;
 import com.mvp.mvp_translation_project.utils.MapperUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service

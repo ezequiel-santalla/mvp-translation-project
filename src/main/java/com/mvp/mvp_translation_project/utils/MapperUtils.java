@@ -2,13 +2,14 @@ package com.mvp.mvp_translation_project.utils;
 
 import com.mvp.mvp_translation_project.models.LanguagePair;
 import com.mvp.mvp_translation_project.models.Project;
-import com.mvp.mvp_translation_project.models.ProjectPayment;
 import com.mvp.mvp_translation_project.models.User;
-import com.mvp.mvp_translation_project.models.dto.*;
+import com.mvp.mvp_translation_project.models.dtos.languages.LanguagePairDto;
+import com.mvp.mvp_translation_project.models.dtos.projects.ProjectDto;
+import com.mvp.mvp_translation_project.models.dtos.projects.ProjectRequestDto;
+import com.mvp.mvp_translation_project.models.dtos.users.UserDto;
+import com.mvp.mvp_translation_project.models.dtos.users.UserRequestDto;
 import com.mvp.mvp_translation_project.types.RoleType;
 import com.mvp.mvp_translation_project.types.StatusType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
@@ -70,19 +71,19 @@ public class MapperUtils {
     }
 
     // Mapear de ProjectCreationDTO a Project
-    public static Project mapToProject(ProjectCreationDTO projectCreationDTO) {
+    public static Project mapToProject(ProjectRequestDto projectRequestDto) {
         Project project = new Project();
 
         // Buscar o crear el LanguagePair
-        project.setLanguagePair(projectCreationDTO.getLanguagePair());
+        project.setLanguagePair(projectRequestDto.getLanguagePair());
 
-        project.setProjectPayment(projectCreationDTO.getProjectPayment());
-        project.setName(projectCreationDTO.getName());
-        project.setDescription(projectCreationDTO.getDescription());
-        project.setDeadline(projectCreationDTO.getDeadline());
-        project.setFilePath(projectCreationDTO.getFilePath());
+        project.setProjectPayment(projectRequestDto.getProjectPayment());
+        project.setName(projectRequestDto.getName());
+        project.setDescription(projectRequestDto.getDescription());
+        project.setDeadline(projectRequestDto.getDeadline());
+        project.setFilePath(projectRequestDto.getFilePath());
         project.setStartingDate(LocalDateTime.now());
-        project.setTaskType(projectCreationDTO.getTaskType());
+        project.setTaskType(projectRequestDto.getTaskType());
         project.setStatus(StatusType.PENDING);
 
         return project;

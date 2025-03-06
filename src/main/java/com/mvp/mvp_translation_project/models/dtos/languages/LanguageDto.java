@@ -1,4 +1,4 @@
-package com.mvp.mvp_translation_project.models.dto;
+package com.mvp.mvp_translation_project.models.dtos.languages;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +13,7 @@ public class LanguageDto {
 
     private String value;
     private String codeIso;
-    private String name;
+    private String nativeName;
     private String flagCode;
+    private String englishName;
 }

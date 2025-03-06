@@ -1,7 +1,7 @@
 package com.mvp.mvp_translation_project.exceptions.handler;
 
 import com.mvp.mvp_translation_project.exceptions.*;
-import com.mvp.mvp_translation_project.models.dto.ErrorResponse;
+import com.mvp.mvp_translation_project.models.dtos.ErrorResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

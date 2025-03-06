@@ -1,10 +1,13 @@
 package com.mvp.mvp_translation_project.types;
 
+import lombok.Getter;
+
+@Getter
 public enum PaymentType {
     PER_WORD("Per word"),
     PER_HOUR("Per hour"),
     PER_MINUTE("Per minute"),
-    FLAT("Flat fee");
+    PER_PAGE("Per page");
 
     private final String description;
 
@@ -12,8 +15,5 @@ public enum PaymentType {
         this.description = description;
     }
 
-    public String getDescription() {
-        return description;
-    }
 }
 

@@ -1,8 +1,7 @@
 package com.mvp.mvp_translation_project.controllers;
 
 import com.mvp.mvp_translation_project.models.LanguagePair;
-import com.mvp.mvp_translation_project.models.dto.LanguagePairDto;
-import com.mvp.mvp_translation_project.models.dto.UserDto;
+import com.mvp.mvp_translation_project.models.dtos.languages.LanguagePairDto;
 import com.mvp.mvp_translation_project.services.LanguagePairService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

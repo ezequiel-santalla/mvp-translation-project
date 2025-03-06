@@ -2,7 +2,10 @@ package com.mvp.mvp_translation_project.controllers;
 
 import com.mvp.mvp_translation_project.exceptions.InvalidDataException;
 import com.mvp.mvp_translation_project.models.Address;
-import com.mvp.mvp_translation_project.models.dto.*;
+import com.mvp.mvp_translation_project.models.dtos.auth.AuthenticationFacade;
+import com.mvp.mvp_translation_project.models.dtos.projects.ProjectDto;
+import com.mvp.mvp_translation_project.models.dtos.users.UserDto;
+import com.mvp.mvp_translation_project.models.dtos.users.UserUpdateDto;
 import com.mvp.mvp_translation_project.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
