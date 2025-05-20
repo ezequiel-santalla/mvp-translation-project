@@ -12,4 +12,5 @@ public class MvpTranslationProjectApplication {
 		SpringApplication.run(MvpTranslationProjectApplication.class, args);
 	}
 
+
 }
