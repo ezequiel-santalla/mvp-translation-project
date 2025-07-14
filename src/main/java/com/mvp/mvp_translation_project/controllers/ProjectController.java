@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:5173")
+//@CrossOrigin(origins = "http://localhost:5173")
+//@CrossOrigin(origins = "https://mvp-translation-project-frontend.vercel.app")
 @RestController
 @RequestMapping("/projects")
 public class ProjectController {
@@ -32,7 +33,9 @@ public class ProjectController {
     // Obtener todos los proyectos
     @GetMapping
     public List<ProjectDto> getAllProjects() {
-        return projectService.findProjects();
+        List<ProjectDto> projectDtos = projectService.findProjects();
+        System.out.println(projectDtos);
+        return projectDtos;
     }
 
     // Crear un proyecto

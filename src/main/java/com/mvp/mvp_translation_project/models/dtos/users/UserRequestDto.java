@@ -36,6 +36,6 @@ public class UserRequestDto {
     private String identityNumber;
 
     @NotBlank(message = "Cellphone is required")
-    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Cellphone must be a valid phone number with 10 to 15 digits")
+    @Pattern(regexp = "^\\+?\\d{10,15}$", message = "Cellphone must be a valid phone number with 10 to 15 digits")
     private String cellphone;
 }

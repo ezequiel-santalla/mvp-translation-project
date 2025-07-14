@@ -20,7 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import java.util.Arrays;
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true)
+//@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     @Autowired
@@ -37,16 +37,26 @@ public class SecurityConfig {
 
 //Usar esta version de filterChain para no tener que autenticar ningun endopint
 
-    /*@Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(auth -> auth
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http,JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+        http
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowedOrigins(Arrays.asList("https://mvp-translation-project-frontend.vercel.app","http://localhost:5173","https://0ae4-181-239-173-240.ngrok-free.app")); // Permitir tu origen frontend
+                    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE")); // Permitir métodos HTTP
+                    config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+                    config.setAllowCredentials(true); // Permitir credenciales si es necesario
+                    return config;
+                }))
+                .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()) // Permitir todas las solicitudes
                 .csrf(AbstractHttpConfigurer::disable) // Deshabilitar CSRF
-                .headers(headers -> headers
-                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)); // Para H2-Console
+
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));// Para H2-Console
 
         return http.build();
-    }*/
+    }
 
 
 
@@ -87,13 +97,14 @@ public class SecurityConfig {
 
         return http.build();
     }*/
+    /*
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
-                    config.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // Permitir tu origen frontend
+                    config.setAllowedOrigins(Arrays.asList("https://mvp-translation-project-frontend.vercel.app","http://localhost:5173","https://7ecb-190-189-40-246.ngrok-free.app")); // Permitir tu origen frontend
                     config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Permitir métodos HTTP
                     config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
                     config.setAllowCredentials(true); // Permitir credenciales si es necesario
@@ -110,6 +121,8 @@ public class SecurityConfig {
         return http.build();
     }
 
+
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();

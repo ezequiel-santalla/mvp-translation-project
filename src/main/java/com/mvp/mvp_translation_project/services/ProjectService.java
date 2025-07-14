@@ -36,7 +36,6 @@ public class ProjectService {
     // Buscar o crear un LanguagePair único
     private LanguagePair findOrCreateLanguagePair(LanguagePair inputPair) {
         if (inputPair.getSourceLanguage().equals(inputPair.getTargetLanguage())) {
-            System.out.println("Los idiomas no pueden ser iguales");
             return null;
         }
 
@@ -52,7 +51,7 @@ public class ProjectService {
     }
 
     // Validar los datos del proyecto antes de guardarlo
-    private void validateProject(ProjectRequestDto dto) {
+    private boolean validateProject(ProjectRequestDto dto) {
         if (dto.getName() == null || dto.getName().isEmpty()) {
             throw new IllegalArgumentException("Project name is required.");
         }
@@ -62,11 +61,14 @@ public class ProjectService {
         if (dto.getLanguagePair() == null) {
             throw new IllegalArgumentException("Language pair is required.");
         }
+        return true;
     }
 
     // Crear un nuevo proyecto
     public ProjectDto saveProject(ProjectRequestDto projectRequestDto) {
-        validateProject(projectRequestDto);
+        if(validateProject(projectRequestDto)){
+
+        }
         projectRequestDto.setLanguagePair(findOrCreateLanguagePair(projectRequestDto.getLanguagePair()));
         Project project = MapperUtils.mapToProject(projectRequestDto);
 
