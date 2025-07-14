@@ -79,11 +79,16 @@ src/
  └── main/
      └── java/
          └── com/yourcompany/translation/
+             ├── configs/
              ├── controllers/
-             ├── services/
+             ├── dtos/
+             ├── events/
+             ├── exceptions/
              ├── models/
              ├── repositories/
-             └── config/
+             ├── services/
+             ├── types/
+             └── utils/
 ```
 🧪 Ejecución local
 
@@ -98,4 +103,4 @@ Este proyecto está licenciado bajo la MIT License.
 
 📧 Contacto
 
-Si tenés alguna duda, sugerencia o consulta, podés escribir a: rodrigolang@gmail.com
+Si tenés alguna duda, sugerencia o consulta, podés escribir a: ezequielasantalla@gmail.com - rodrigolang@gmail.com
